@@ -1,0 +1,5 @@
+{
+  "name": "FlatwareFlow Invoice Manager",
+  "description": "Automated invoice processing system for disposable flatware sellers. Features AI-powered OCR using Gemini Flash, inventory tracking, and accounts receivable management.",
+  "requestFramePermissions": []
+}
