@@ -1,123 +1,14 @@
-import { Component, input, output, signal, effect } from '@angular/core';
+import { Component, input, output, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Invoice, InvoiceItem } from '../services/invoice.service';
+import { Invoice, InvoiceItem } from '../models/invoice.model';
 
 @Component({
   selector: 'app-data-verification',
-  standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden flex flex-col h-full">
-      <div class="bg-indigo-600 p-4 flex justify-between items-center text-white shrink-0">
-        <h2 class="text-lg font-bold flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-          Verify Extraction
-        </h2>
-        <span class="text-xs bg-white/20 px-2 py-1 rounded">AI Confidence: High</span>
-      </div>
-
-      <div class="p-6 overflow-y-auto grow">
-        <!-- Header Info -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div class="space-y-1">
-            <label class="text-xs font-medium text-slate-500 uppercase">Customer Name</label>
-            <input type="text" [(ngModel)]="editableData().customer_name" 
-                   class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all font-semibold text-slate-800">
-          </div>
-          <div class="space-y-1">
-            <label class="text-xs font-medium text-slate-500 uppercase">Invoice Date</label>
-            <input type="date" [(ngModel)]="editableData().invoice_date" 
-                   class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-          </div>
-          <div class="space-y-1">
-            <label class="text-xs font-medium text-slate-500 uppercase">Invoice #</label>
-            <input type="text" [(ngModel)]="editableData().invoice_number" 
-                   class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
-          </div>
-        </div>
-
-        <!-- Items Table -->
-        <div class="border rounded-lg overflow-hidden mb-6">
-          <table class="w-full text-sm text-left">
-            <thead class="bg-slate-100 text-slate-600 font-semibold">
-              <tr>
-                <th class="px-4 py-3">Item Description</th>
-                <th class="px-4 py-3 w-24">Qty</th>
-                <th class="px-4 py-3 w-32">Unit Price</th>
-                <th class="px-4 py-3 w-32 text-right">Total</th>
-                <th class="px-2 py-3 w-10"></th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
-              @for (item of editableData().items; track $index) {
-                <tr class="group hover:bg-slate-50 transition-colors">
-                  <td class="px-4 py-2">
-                    <input type="text" [(ngModel)]="item.name" 
-                           class="w-full bg-transparent border-none focus:ring-0 p-0 font-medium text-slate-700 placeholder-slate-400" placeholder="Item name">
-                  </td>
-                  <td class="px-4 py-2">
-                    <input type="number" [(ngModel)]="item.quantity" (change)="recalcItem(item)"
-                           class="w-full bg-transparent border-none focus:ring-0 p-0 text-slate-600">
-                  </td>
-                  <td class="px-4 py-2">
-                    <div class="flex items-center">
-                      <span class="text-slate-400 mr-1">$</span>
-                      <input type="number" [(ngModel)]="item.unit_price" (change)="recalcItem(item)"
-                             class="w-full bg-transparent border-none focus:ring-0 p-0 text-slate-600">
-                    </div>
-                  </td>
-                  <td class="px-4 py-2 text-right font-mono text-slate-800">
-                    {{ item.total_price | currency }}
-                  </td>
-                  <td class="px-2 py-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button (click)="removeItem($index)" class="text-red-400 hover:text-red-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                        <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              }
-              
-              <!-- Add Item Row -->
-              <tr>
-                <td colspan="5" class="px-4 py-2 bg-slate-50">
-                  <button (click)="addItem()" class="text-indigo-600 text-sm font-medium hover:underline flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-                      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                    </svg>
-                    Add Item
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-            <tfoot class="bg-slate-100 font-bold text-slate-700">
-              <tr>
-                <td colspan="3" class="px-4 py-3 text-right">Invoice Total:</td>
-                <td class="px-4 py-3 text-right text-indigo-700 text-lg">{{ calculateTotal() | currency }}</td>
-                <td></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </div>
-
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 shrink-0">
-        <button (click)="onCancel.emit()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200 font-medium transition-colors">
-          Discard
-        </button>
-        <button (click)="onConfirm.emit(editableData())" class="px-6 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition-all flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-          </svg>
-          Confirm & Save
-        </button>
-      </div>
-    </div>
-  `
+  templateUrl: './data-verification.component.html',
+  styleUrl: './data-verification.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataVerificationComponent {
   data = input.required<Partial<Invoice>>();

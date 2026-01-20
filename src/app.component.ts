@@ -1,6 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { InvoiceService, Invoice } from './services/invoice.service';
+import { InvoiceService } from './services/invoice.service';
+import { Invoice } from './models/invoice.model';
 import { InvoiceUploaderComponent } from './components/invoice-uploader.component';
 import { DataVerificationComponent } from './components/data-verification.component';
 import { DashboardComponent } from './components/dashboard.component';
@@ -9,7 +10,9 @@ import { DashboardComponent } from './components/dashboard.component';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent],
-  templateUrl: './app.component.html'
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   private invoiceService = inject(InvoiceService);
