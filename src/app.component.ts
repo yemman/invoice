@@ -7,12 +7,11 @@ import { DataVerificationComponent } from './components/data-verification.compon
 import { DashboardComponent } from './components/dashboard.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-root',
+    imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   private invoiceService = inject(InvoiceService);

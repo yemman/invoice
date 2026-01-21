@@ -4,12 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceItem } from '../models/invoice.model';
 
 @Component({
-  selector: 'app-data-verification',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './data-verification.component.html',
-  styleUrl: './data-verification.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-data-verification',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './data-verification.component.html',
+    styleUrl: './data-verification.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataVerificationComponent {
   data = input.required<Partial<Invoice>>();

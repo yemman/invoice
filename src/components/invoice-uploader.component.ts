@@ -2,12 +2,11 @@ import { Component, output, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-invoice-uploader',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './invoice-uploader.component.html',
-  styleUrl: './invoice-uploader.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-invoice-uploader',
+    imports: [CommonModule],
+    templateUrl: './invoice-uploader.component.html',
+    styleUrl: './invoice-uploader.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InvoiceUploaderComponent {
   imageSelected = output<string>(); // Emits base64 string
