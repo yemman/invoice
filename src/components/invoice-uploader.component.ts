@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-invoice-uploader',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './invoice-uploader.component.html',
   styleUrl: './invoice-uploader.component.css',

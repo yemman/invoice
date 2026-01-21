@@ -9,21 +9,25 @@
     "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "rxjs": "^7.8.1",
-    "@angular/core": "18.0.0",
-    "@angular/common": "18.0.0",
-    "@google/genai": "^0.1.1",
-    "@angular/platform-browser": "18.0.0",
-    "@angular/compiler": "18.0.0",
-    "@angular/forms": "18.0.0",
     "@angular/build": "18.0.0",
     "@angular/cli": "18.0.0",
+    "@angular/common": "18.0.0",
+    "@angular/compiler": "18.0.0",
     "@angular/compiler-cli": "18.0.0",
-    "tailwindcss": "latest"
+    "@angular/core": "18.0.0",
+    "@angular/forms": "18.0.0",
+    "@angular/platform-browser": "18.0.0",
+    "@google/genai": "^1.38.0",
+    "@google/generative-ai": "^0.3.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "firebase": "^11.0.0",
+    "postcss": "^8.5.6",
+    "rxjs": "^7.8.1",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "typescript": "~5.8.2",
+    "typescript": "~5.4.0",
     "vite": "^6.2.0"
   }
 }

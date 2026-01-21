@@ -5,6 +5,7 @@ import { Invoice, InvoiceItem } from '../models/invoice.model';
 
 @Component({
   selector: 'app-data-verification',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './data-verification.component.html',
   styleUrl: './data-verification.component.css',
