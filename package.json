@@ -9,14 +9,14 @@
     "preview": "ng serve --configuration=production"
   },
   "dependencies": {
-    "@angular/build": "19.2.19",
-    "@angular/cli": "19.2.19",
-    "@angular/common": "19.2.18",
-    "@angular/compiler": "19.2.18",
-    "@angular/compiler-cli": "19.2.18",
-    "@angular/core": "19.2.18",
-    "@angular/forms": "19.2.18",
-    "@angular/platform-browser": "19.2.18",
+    "@angular/build": "20.3.14",
+    "@angular/cli": "20.3.14",
+    "@angular/common": "20.3.16",
+    "@angular/compiler": "20.3.16",
+    "@angular/compiler-cli": "20.3.16",
+    "@angular/core": "20.3.16",
+    "@angular/forms": "20.3.16",
+    "@angular/platform-browser": "20.3.16",
     "@google/genai": "^1.38.0",
     "@google/generative-ai": "^0.3.0",
     "@tailwindcss/postcss": "^4.1.18",
@@ -26,7 +26,7 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "@angular/build": "^19.2.19",
+    "@angular/build": "^20.3.14",
     "@types/node": "^22.14.0",
     "typescript": "~5.8.3",
     "vite": "^6.2.0"

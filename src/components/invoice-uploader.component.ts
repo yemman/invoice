@@ -1,9 +1,9 @@
 import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-invoice-uploader',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './invoice-uploader.component.html',
     styleUrl: './invoice-uploader.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
