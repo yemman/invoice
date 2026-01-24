@@ -18,6 +18,7 @@
             },
             "index": "index.html",
             "browser": "index.tsx",
+            "styles": ["src/styles.css"],
             "tsConfig": "tsconfig.json"
           },
           "configurations": {
@@ -27,7 +28,13 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "environments/environment.ts",
+                  "with": "environments/environment.development.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -43,6 +50,64 @@
             },
             "development": {
               "buildTarget": "app:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    },
+    "invoice": {
+      "projectType": "application",
+      "root": "invoice",
+      "sourceRoot": "invoice/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": {
+              "base": "./dist",
+              "browser": "."
+            },
+            "index": "index.html",
+            "browser": "index.tsx",
+            "styles": ["src/styles.css"],
+            "tsConfig": "tsconfig.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/favicon.svg",
+              "src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "environments/environment.ts",
+                  "with": "environments/environment.development.ts"
+                }
+              ]
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 3000
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "invoice:build:production"
+            },
+            "development": {
+              "buildTarget": "invoice:build:development"
             }
           },
           "defaultConfiguration": "development"

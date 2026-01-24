@@ -1,17 +1,18 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from './services/invoice.service';
 import { Invoice } from './models/invoice.model';
-import { InvoiceUploaderComponent } from './components/invoice-uploader.component';
-import { DataVerificationComponent } from './components/data-verification.component';
-import { DashboardComponent } from './components/dashboard.component';
+import { InvoiceUploaderComponent } from './components/invoice-uploader/invoice-uploader.component';
+import { DataVerificationComponent } from './components/data-verification/data-verification.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @Component({
     selector: 'app-root',
     imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None
 })
 export class AppComponent {
   private invoiceService = inject(InvoiceService);

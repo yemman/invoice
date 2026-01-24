@@ -1,26 +1,13 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { GoogleGenAI, Type } from "@google/genai";
-import { initializeApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, Firestore } from 'firebase/firestore';
 import { Invoice, InvoiceItem } from '../models/invoice.model';
+import { environment } from '../../environments/environment';
+import { FirebaseService } from './firebase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InvoiceService {
-  // --- Firebase Config ---
-  private firebaseConfig = {   
-    apiKey: "AIzaSyCq5ULuPXrpI416RT0V4HZDArOh9ogGWMU",
-    authDomain: "gen-lang-client-0328863545.firebaseapp.com",
-    projectId: "gen-lang-client-0328863545",
-    storageBucket: "gen-lang-client-0328863545.firebasestorage.app",
-    messagingSenderId: "492842723997",
-    appId: "1:492842723997:web:84757e6737e42640ad4274",
-    measurementId: "G-63R88DB5T7"
-  };
-
-  private app: FirebaseApp | undefined;
-  private db: Firestore | undefined;
   private readonly COLLECTION_NAME = 'invoices';
 
   // --- State ---
@@ -58,50 +45,31 @@ export class InvoiceService {
     return this.invoicesSignal().reduce((acc, curr) => acc + curr.totalAmount, 0);
   });
 
-  constructor() {
-    this.initFirebase();
-  }
-
-  private initFirebase() {
-    try {
-      this.app = initializeApp(this.firebaseConfig);
-      this.db = getFirestore(this.app);
-      this.subscribeToInvoices();
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
-      // Use fallback data immediately if DB connection fails
-      this.invoicesSignal.set(this.getFallbackData());
-    }
+  constructor(private firebaseService: FirebaseService) {
+    this.subscribeToInvoices();
   }
 
   private subscribeToInvoices() {
-    if (!this.db) return;
-
-    try {
-      // Real-time listener for the invoices collection
-      const q = query(collection(this.db, this.COLLECTION_NAME), orderBy('createdAt', 'desc'));
-      
-      onSnapshot(q, (snapshot) => {
-        const invoices: Invoice[] = [];
-        snapshot.forEach((doc) => {
-          invoices.push({ id: doc.id, ...doc.data() } as Invoice);
-        });
-        this.invoicesSignal.set(invoices);
-      }, (error) => {
-        console.error("Error subscribing to Firebase.", error);
+    this.firebaseService.subscribeToInvoices(
+      (invoices) => this.invoicesSignal.set(invoices),
+      (error) => {
+        console.error("Failed to load invoices:", error);
         this.invoicesSignal.set(this.getFallbackData());
-      });
-    } catch (e) {
-      console.error("Error setting up Firestore query", e);
-      this.invoicesSignal.set(this.getFallbackData());
-    }
+      }
+    );
   }
 
-  // --- Actions ---
-
   async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
-    const apiKey = typeof process !== 'undefined' ? process.env['API_KEY'] : '';
-    if (!apiKey) {
+    let apiKey = '';
+
+    if(!environment.production){
+      apiKey = environment.apiKey;
+    }
+    else{
+      apiKey = typeof process !== 'undefined' ? process.env['API_KEY'] : '';
+    }
+
+    if (!apiKey) {   
       throw new Error('API Key is missing');
     }
 
@@ -172,28 +140,11 @@ export class InvoiceService {
   }
 
   async addInvoice(invoiceData: Partial<Invoice>) {
-    if (!this.db) {
-        alert("Database is not connected. Changes cannot be saved.");
-        return;
-    }
-
-    const totalAmount = (invoiceData.items || []).reduce((sum, item) => sum + (item.total_price || 0), 0);
-    
-    const newInvoice = {
-      customer_name: invoiceData.customer_name || 'Unknown Customer',
-      invoice_date: invoiceData.invoice_date || new Date().toISOString().split('T')[0],
-      invoice_number: invoiceData.invoice_number || 'UNKNOWN',
-      items: invoiceData.items || [],
-      totalAmount: totalAmount,
-      status: 'verified',
-      createdAt: Timestamp.now()
-    };
-
     try {
-      await addDoc(collection(this.db, this.COLLECTION_NAME), newInvoice);
+      await this.firebaseService.addInvoice(invoiceData);
     } catch (error) {
-      console.error("Error adding document: ", error);
       alert("Failed to save to database. Check console for details.");
+      throw error;
     }
   }
 
