@@ -1,6 +1,8 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Invoice, InvoiceItem } from '../models/invoice.model';
+import { CatalogService } from './catalog.service';
+import { MessageService } from './message.service';
 import { environment } from '../../environments/environment';
 import { FirebaseService } from './firebase.service';
 
@@ -45,8 +47,26 @@ export class InvoiceService {
     return this.invoicesSignal().reduce((acc, curr) => acc + curr.totalAmount, 0);
   });
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(private firebaseService: FirebaseService, private catalogService: CatalogService, private messageService: MessageService) {
     this.subscribeToInvoices();
+  }
+
+  async updateInvoice(id: string, updates: Partial<Invoice>) {
+    try {
+      await this.firebaseService.updateInvoice(id, updates);
+    } catch (error) {
+      console.error("Failed to update invoice:", error);
+      throw error;
+    }
+  }
+
+  async deleteInvoice(id: string) {
+    try {
+      await this.firebaseService.deleteInvoice(id);
+    } catch (error) {
+      console.error("Failed to delete invoice:", error);
+      throw error;
+    }
   }
 
   private subscribeToInvoices() {
@@ -118,12 +138,19 @@ export class InvoiceService {
       const rawData = JSON.parse(text); 
       
       // Map back to application domain model (InvoiceItem)
-      const items: InvoiceItem[] = rawData.map((item: any) => ({
-        name: `Catalog Item #${item.index}`,
-        quantity: item.quantity,
-        unit_price: 0, // Default as not extracted
-        total_price: 0
-      }));
+      const items: InvoiceItem[] = rawData.map((item: any) => {
+        const catalog = this.catalogService.getCatalogItemByIndex(item.index);
+        const unitPrice = catalog ? catalog.unit_price : 0;
+        const name = catalog ? catalog.name : `Catalog Item #${item.index}`;
+        return {
+          name: name,
+          quantity: item.quantity,
+          unit_price: unitPrice,
+          total_price: unitPrice * item.quantity,
+          catalogId: catalog?.id,
+          catalogIndex: item.index
+        } as InvoiceItem;
+      });
 
       // Return a Partial<Invoice> that the UI expects
       return {
@@ -142,8 +169,9 @@ export class InvoiceService {
   async addInvoice(invoiceData: Partial<Invoice>) {
     try {
       await this.firebaseService.addInvoice(invoiceData);
+      this.messageService.success('Invoice saved');
     } catch (error) {
-      alert("Failed to save to database. Check console for details.");
+      this.messageService.error("Failed to save to database. Check console for details.");
       throw error;
     }
   }

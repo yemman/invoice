@@ -1,6 +1,9 @@
 import { Component, inject, signal, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from './services/invoice.service';
+import { MessageToastComponent } from './components/shared/message-toast.component';
+import { ConfirmModalComponent } from './components/shared/confirm-modal.component';
+import { MessageService } from './services/message.service';
 import { Invoice } from './models/invoice.model';
 import { InvoiceUploaderComponent } from './components/invoice-uploader/invoice-uploader.component';
 import { DataVerificationComponent } from './components/data-verification/data-verification.component';
@@ -8,7 +11,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 @Component({
     selector: 'app-root',
-    imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent],
+    imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent, MessageToastComponent, ConfirmModalComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +19,7 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 })
 export class AppComponent {
   private invoiceService = inject(InvoiceService);
+  private messageService = inject(MessageService);
 
   // Simple state machine for the view
   view = signal<'dashboard' | 'upload' | 'verify'>('dashboard');
@@ -39,7 +43,7 @@ export class AppComponent {
       this.view.set('verify');
     } catch (err) {
       console.error(err);
-      alert('Failed to analyze invoice. Please try again or check your API key.');
+      this.messageService.error('Failed to analyze invoice. Please try again or check your API key.');
     }
   }
 

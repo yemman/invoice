@@ -1,0 +1,56 @@
+@if (customerName) {
+  <div class="fixed inset-0 bg-black/40 flex items-start justify-end p-6">
+    <div class="w-96 max-h-[90vh] bg-white rounded-lg shadow-lg overflow-auto">
+      <div class="p-4 border-b flex items-center justify-between">
+        <div>
+          <h3 class="font-bold text-slate-800">Invoices — {{ customerName }}</h3>
+          <p class="text-xs text-slate-500">Select an invoice to view details</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button (click)="onClose()" class="px-3 py-1 bg-slate-100 rounded hover:bg-slate-200">Close</button>
+        </div>
+      </div>
+      <div class="p-3">
+        <table class="w-full text-left border-collapse">
+          <thead class="text-xs text-slate-500 uppercase font-semibold">
+            <tr>
+              <th class="px-3 py-2">Invoice #</th>
+              <th class="px-3 py-2">Date</th>
+              <th class="px-3 py-2 text-right">Total</th>
+              <th class="px-3 py-2 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            @for (inv of invoices; track inv.id) {
+              <tr class="hover:bg-slate-50 transition-colors">
+                <td class="px-3 py-2 font-medium text-slate-700">{{ inv.invoice_number }}</td>
+                <td class="px-3 py-2 text-slate-500">{{ inv.invoice_date }}</td>
+                <td class="px-3 py-2 text-right font-mono font-bold">{{ inv.totalAmount | currency }}</td>
+                <td class="px-3 py-2 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button (click)="selectInvoice(inv)" title="View" class="p-2 text-emerald-600 hover:text-emerald-800 rounded hover:bg-emerald-50">
+                      <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button (click)="requestRemove(inv.id)" title="Delete" class="p-2 text-rose-600 hover:text-rose-800 rounded hover:bg-rose-50">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="p-6 text-center text-slate-400">No invoices for this customer.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        @if (selectedInvoice()) {
+          <div class="mt-4 p-3 border rounded bg-slate-50">
+            <app-invoice-detail [invoice]="selectedInvoice()" (edit)="requestEdit($event)"></app-invoice-detail>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

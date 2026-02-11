@@ -1,7 +1,9 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CatalogService, CatalogItem } from '../../services/catalog.service';
+import { CatalogService } from '../../services/catalog.service';
+import { MessageService } from '../../services/message.service';
+import { CatalogItem } from '../../models/catalog.model';
 
 @Component({
   selector: 'app-catalog-management',
@@ -21,34 +23,22 @@ export class CatalogManagementComponent {
   protected formData = signal({
     index: 0,
     name: '',
-    description: '',
+    box_quantety: 0,
     unit_price: 0,
-    category: ''
+    is_print: false
   });
 
-  constructor(private catalogService: CatalogService) {}
+  constructor(private catalogService: CatalogService, private messageService: MessageService) {}
 
   openAddForm() {
-    this.formData.set({
-      index: 0,
-      name: '',
-      description: '',
-      unit_price: 0,
-      category: ''
-    });
+    this.formData.set({ index: 0, name: '', box_quantety: 0, unit_price: 0, is_print: false });
     this.isEditing.set(false);
     this.showForm.set(true);
     this.error.set('');
   }
 
   openEditForm(item: CatalogItem) {
-    this.formData.set({
-      index: item.index,
-      name: item.name,
-      description: item.description || '',
-      unit_price: item.unit_price,
-      category: item.category || ''
-    });
+    this.formData.set({ index: item.index, name: item.name, box_quantety: item.box_quantety || 0, unit_price: item.unit_price, is_print: item.is_print ?? false });
     this.selectedItem.set(item);
     this.isEditing.set(true);
     this.showForm.set(true);
@@ -64,9 +54,24 @@ export class CatalogManagementComponent {
   async saveItem() {
     const data = this.formData();
     
-    if (!data.index || !data.name || data.unit_price < 0) {
+    if (!data.name || data.unit_price < 0 || !data.index) {
       this.error.set('Please fill in all required fields (Index, Name, Price)');
       return;
+    }
+
+    // Check duplicate index locally for quick feedback
+    const existing = this.catalogService.getCatalogItemByIndex(data.index);
+    if (!this.isEditing() && existing) {
+      this.error.set(`Index ${data.index} already exists`);
+      this.loading.set(false);
+      return;
+    }
+    if (this.isEditing() && this.selectedItem()) {
+      if (existing && existing.id !== this.selectedItem()!.id) {
+        this.error.set(`Index ${data.index} already used by another item`);
+        this.loading.set(false);
+        return;
+      }
     }
 
     this.loading.set(true);
@@ -86,13 +91,16 @@ export class CatalogManagementComponent {
   }
 
   async deleteItem(item: CatalogItem) {
-    if (!confirm(`Delete "${item.name}"?`)) return;
+    const ok = await this.messageService.confirm(`Delete "${item.name}"?`);
+    if (!ok) return;
 
     this.loading.set(true);
     try {
       await this.catalogService.deleteCatalogItem(item.id!);
+      this.messageService.success('Catalog item deleted');
     } catch (err) {
       this.error.set('Failed to delete item.');
+      this.messageService.error('Failed to delete item.');
       console.error(err);
     } finally {
       this.loading.set(false);

@@ -1,4 +1,5 @@
-import { Component, output, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, output, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { MessageService } from '../../services/message.service';
 
 
 @Component({
@@ -12,6 +13,7 @@ export class InvoiceUploaderComponent {
   imageSelected = output<string>(); // Emits base64 string
   isProcessing = signal(false);
   previewUrl = signal<string | null>(null);
+  private messageService = inject(MessageService);
   
   // Internal base64 store without prefix for processing
   private rawBase64: string | null = null;
@@ -38,7 +40,7 @@ export class InvoiceUploaderComponent {
 
   private readFile(file: File) {
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file.');
+      this.messageService.warn('Please upload an image file.');
       return;
     }
 

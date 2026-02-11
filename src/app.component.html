@@ -5,9 +5,7 @@
     <div class="p-6 border-b border-slate-800">
       <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
         <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-            <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
-          </svg>
+          <i class="fa-solid fa-utensils w-5 h-5" aria-hidden="true"></i>
         </div>
         FlatwareFlow
       </h1>
@@ -19,9 +17,7 @@
               [class.bg-indigo-600]="view() === 'dashboard'"
               [class.text-white]="view() === 'dashboard'"
               class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 group-hover:text-indigo-400 transition-colors">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-        </svg>
+        <i class="fa-solid fa-chart-pie w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
         Dashboard
       </button>
 
@@ -29,9 +25,7 @@
               [class.bg-indigo-600]="view() === 'upload' || view() === 'verify'"
               [class.text-white]="view() === 'upload' || view() === 'verify'"
               class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 group-hover:text-indigo-400 transition-colors">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
-        </svg>
+        <i class="fa-solid fa-file-upload w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
         Process Invoice
       </button>
     </nav>
@@ -98,5 +92,9 @@
       </div>
     </div>
   </main>
+
+  <!-- Global message toasts -->
+  <app-message-toast></app-message-toast>
+  <app-confirm-modal></app-confirm-modal>
 
 </div>

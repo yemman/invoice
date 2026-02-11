@@ -3,6 +3,10 @@ export interface InvoiceItem {
   quantity: number;
   unit_price: number;
   total_price: number;
+  // Optional link to a catalog item (populated when invoice items are mapped from OCR/index)
+  catalogId?: string;
+  // The catalog index number (if provided by OCR)
+  catalogIndex?: number;
 }
 
 export interface Invoice {

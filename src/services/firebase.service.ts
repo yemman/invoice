@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { initializeApp, FirebaseApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, Firestore } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, Timestamp, Firestore, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Invoice } from '../models/invoice.model';
 import { environment } from '../../environments/environment';
 
@@ -85,6 +85,33 @@ export class FirebaseService {
       await addDoc(collection(this.db, this.COLLECTION_NAME), newInvoice);
     } catch (error) {
       console.error("Error adding document: ", error);
+      throw error;
+    }
+  }
+
+  async updateInvoice(id: string, updates: Partial<Invoice>): Promise<void> {
+    if (!this.db) throw new Error("Database is not connected");
+    try {
+      const docRef = doc(this.db, this.COLLECTION_NAME, id);
+      // Ensure totalAmount stays consistent if items changed
+      if (updates.items) {
+        const totalAmount = (updates.items || []).reduce((sum, item) => sum + (item.total_price || 0), 0);
+        updates = { ...updates, totalAmount };
+      }
+      await updateDoc(docRef, updates as any);
+    } catch (error) {
+      console.error("Error updating invoice:", error);
+      throw error;
+    }
+  }
+
+  async deleteInvoice(id: string): Promise<void> {
+    if (!this.db) throw new Error("Database is not connected");
+    try {
+      const docRef = doc(this.db, this.COLLECTION_NAME, id);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error("Error deleting invoice:", error);
       throw error;
     }
   }
