@@ -32,7 +32,7 @@ COPY --from=build /app/dist/your-app-name /usr/share/nginx/html
 
 # Cloud Run expects your container to listen on the port specified by the PORT environment variable.
 # Nginx is configured to listen on port 80, and Cloud Run will automatically map its PORT env var to this.
-EXPOSE 80
+EXPOSE 8080
 
 # Command to start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
