@@ -1,53 +1,123 @@
 <div class="flex h-screen bg-slate-50 overflow-hidden font-sans">
-  
-  <!-- Sidebar -->
-  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 transition-all duration-300">
-    <div class="p-6 border-b border-slate-800">
-      <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-        <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white">
-          <i class="fa-solid fa-utensils w-5 h-5" aria-hidden="true"></i>
-        </div>
-        FlatwareFlow
-      </h1>
-      <p class="text-xs text-slate-500 mt-2">Invoice Automation System</p>
-    </div>
-
-    <nav class="flex-1 p-4 space-y-1">
-      <button (click)="navigateToDashboard()"
-              [class.bg-indigo-600]="view() === 'dashboard'"
-              [class.text-white]="view() === 'dashboard'"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
-        <i class="fa-solid fa-chart-pie w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
-        Dashboard
-      </button>
-
-      <button (click)="navigateToUpload()"
-              [class.bg-indigo-600]="view() === 'upload' || view() === 'verify'"
-              [class.text-white]="view() === 'upload' || view() === 'verify'"
-              class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
-        <i class="fa-solid fa-file-upload w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
-        Process Invoice
-      </button>
-    </nav>
-
-    <!-- Mini Stats & Tools in Sidebar -->
-    <div class="p-4 border-t border-slate-800">
-      <div class="bg-slate-800/50 rounded-lg p-3">
-        <p class="text-xs text-slate-500 mb-1">Total Revenue</p>
-        <p class="text-lg font-mono font-bold text-emerald-400">{{ stats.totalRevenue | currency }}</p>
+  <!-- Show login if not authenticated or still loading -->
+  @if (authService.loading() || !authService.isAuthenticated()) {
+    <app-login></app-login>
+  } @else {
+    <!-- Authenticated user view -->
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 transition-all duration-300">
+      <div class="p-6 border-b border-slate-800">
+        <h1 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+          <div class="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center text-white">
+            <i class="fa-solid fa-utensils w-5 h-5" aria-hidden="true"></i>
+          </div>
+          FlatwareFlow
+        </h1>
+        <p class="text-xs text-slate-500 mt-2">Invoice Automation System</p>
       </div>
-    </div>
-  </aside>
 
-  <!-- Main Content Area -->
-  <main class="flex-1 flex flex-col h-full relative overflow-hidden">
-    <!-- Top Bar -->
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 shrink-0">
-      <h2 class="text-xl font-bold text-slate-800">
-        @if (view() === 'dashboard') {
-          Seller Dashboard
-        } @else if (view() === 'upload') {
-          Upload Invoice
+      <nav class="flex-1 p-4 space-y-1">
+        <button (click)="navigateToDashboard()"
+                [class.bg-indigo-600]="view() === 'dashboard'"
+                [class.text-white]="view() === 'dashboard'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
+          <i class="fa-solid fa-chart-pie w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
+          Dashboard
+        </button>
+
+        <button (click)="navigateToUpload()"
+                [class.bg-indigo-600]="view() === 'upload' || view() === 'verify'"
+                [class.text-white]="view() === 'upload' || view() === 'verify'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
+          <i class="fa-solid fa-file-upload w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
+          Process Invoice
+        </button>
+      </nav>
+
+      <!-- Mini Stats & Tools in Sidebar -->
+      <div class="p-4 border-t border-slate-800">
+        <div class="bg-slate-800/50 rounded-lg p-3">
+          <p class="text-xs text-slate-500 mb-1">Total Revenue</p>
+          <p class="text-lg font-mono font-bold text-emerald-400">{{ stats.totalRevenue | currency }}</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden">
+      <!-- Top Bar -->
+      <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-8 shrink-0">
+        <h2 class="text-xl font-bold text-slate-800">
+          @if (view() === 'dashboard') {
+            Seller Dashboard
+          } @else if (view() === 'upload') {
+            Upload Invoice
+          } @else {
+            Review Data
+          }
+        </h2>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2 text-sm text-slate-500">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            System Operational
+          </div>
+          <!-- User Profile Dropdown -->
+          <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+            @if (authService.currentUser(); as user) {
+              <div class="text-right">
+                <p class="text-sm font-medium text-slate-800">{{ user.displayName || user.email }}</p>
+                <p class="text-xs text-slate-500">{{ user.email }}</p>
+              </div>
+              @if (user.photoURL) {
+                <img [src]="user.photoURL" [alt]="user.displayName" class="w-8 h-8 rounded-full object-cover">
+              } @else {
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
+                  {{ (user.displayName || user.email || 'U').charAt(0).toUpperCase() }}
+                </div>
+              }
+              <button (click)="handleSignOut()" class="ml-2 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition">
+                Sign Out
+              </button>
+            }
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Viewport -->
+      <div class="flex-1 overflow-hidden p-6 relative">
+        <div class="max-w-6xl mx-auto h-full">
+          @if (view() === 'dashboard') {
+            <app-dashboard class="h-full block" />
+          } 
+          
+          @if (view() === 'upload') {
+            <div class="h-full flex items-center justify-center">
+              <div class="w-full max-w-2xl">
+                <app-invoice-uploader 
+                  (imageSelected)="handleImageSelected($event)" 
+                />
+              </div>
+            </div>
+          }
+
+          @if (view() === 'verify') {
+            @if (currentExtractedData(); as data) {
+              <app-data-verification 
+                [data]="data"
+                (onConfirm)="handleVerificationConfirm($event)"
+                (onCancel)="handleVerificationCancel()"
+              />
+            }
+          }
+        </div>
+      </div>
+    </main>
+
+    <!-- Global message toasts -->
+    <app-message-toast></app-message-toast>
+    <app-confirm-modal></app-confirm-modal>
+  }
+
         } @else {
           Review Data
         }
@@ -57,8 +127,24 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
           System Operational
         </div>
-        <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
-          FS
+        <!-- User Profile Dropdown -->
+        <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+          @if (authService.currentUser(); as user) {
+            <div class="text-right">
+              <p class="text-sm font-medium text-slate-800">{{ user.displayName || user.email }}</p>
+              <p class="text-xs text-slate-500">{{ user.email }}</p>
+            </div>
+            @if (user.photoURL) {
+              <img [src]="user.photoURL" [alt]="user.displayName" class="w-8 h-8 rounded-full object-cover">
+            } @else {
+              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
+                {{ (user.displayName || user.email || 'U').charAt(0).toUpperCase() }}
+              </div>
+            }
+            <button (click)="handleSignOut()" class="ml-2 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition">
+              Sign Out
+            </button>
+          }
         </div>
       </div>
     </header>

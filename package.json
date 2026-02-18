@@ -21,6 +21,7 @@
     "@angular/platform-browser": "21.1.0",
     "@fortawesome/fontawesome-free": "^6.5.0",
     "@google/genai": "^1.38.0",
+    "@google/identity": "^1.14.0",
     "@tailwindcss/postcss": "^4.1.18",
     "firebase": "^11.0.0",
     "lightningcss": "1.31.1",
