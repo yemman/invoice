@@ -61,7 +61,7 @@
             <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
             System Operational
           </div>
-          <!-- User Profile Dropdown -->
+          <!-- User Profile Section -->
           <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
             @if (authService.currentUser(); as user) {
               <div class="text-right">
@@ -117,70 +117,4 @@
     <app-message-toast></app-message-toast>
     <app-confirm-modal></app-confirm-modal>
   }
-
-        } @else {
-          Review Data
-        }
-      </h2>
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-2 text-sm text-slate-500">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          System Operational
-        </div>
-        <!-- User Profile Dropdown -->
-        <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
-          @if (authService.currentUser(); as user) {
-            <div class="text-right">
-              <p class="text-sm font-medium text-slate-800">{{ user.displayName || user.email }}</p>
-              <p class="text-xs text-slate-500">{{ user.email }}</p>
-            </div>
-            @if (user.photoURL) {
-              <img [src]="user.photoURL" [alt]="user.displayName" class="w-8 h-8 rounded-full object-cover">
-            } @else {
-              <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
-                {{ (user.displayName || user.email || 'U').charAt(0).toUpperCase() }}
-              </div>
-            }
-            <button (click)="handleSignOut()" class="ml-2 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded transition">
-              Sign Out
-            </button>
-          }
-        </div>
-      </div>
-    </header>
-
-    <!-- Content Viewport -->
-    <div class="flex-1 overflow-hidden p-6 relative">
-      <div class="max-w-6xl mx-auto h-full">
-        @if (view() === 'dashboard') {
-          <app-dashboard class="h-full block" />
-        } 
-        
-        @if (view() === 'upload') {
-          <div class="h-full flex items-center justify-center">
-            <div class="w-full max-w-2xl">
-              <app-invoice-uploader 
-                (imageSelected)="handleImageSelected($event)" 
-              />
-            </div>
-          </div>
-        }
-
-        @if (view() === 'verify') {
-          @if (currentExtractedData(); as data) {
-            <app-data-verification 
-              [data]="data"
-              (onConfirm)="handleVerificationConfirm($event)"
-              (onCancel)="handleVerificationCancel()"
-            />
-          }
-        }
-      </div>
-    </div>
-  </main>
-
-  <!-- Global message toasts -->
-  <app-message-toast></app-message-toast>
-  <app-confirm-modal></app-confirm-modal>
-
 </div>

@@ -1,5 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import {
+  initializeApp,
+  getApp,
+  FirebaseApp,
+} from 'firebase/app';
+import {
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
@@ -8,9 +13,11 @@ import {
   User,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  updateProfile
 } from 'firebase/auth';
 import { FirebaseService } from './firebase.service';
+import { FIREBASE_CONFIG } from '../config/firebase.config';
 
 export interface AuthUser {
   uid: string;
@@ -37,7 +44,17 @@ export class AuthService {
 
   private initializeAuth() {
     try {
-      this.auth = getAuth();
+      // Try to get existing Firebase app, or initialize if needed
+      let app: FirebaseApp;
+      try {
+        app = getApp();
+      } catch (error) {
+        // App not initialized yet, initialize it
+        app = initializeApp(FIREBASE_CONFIG);
+      }
+
+      // Get auth instance for this app
+      this.auth = getAuth(app);
       
       // Listen to authentication state changes
       onAuthStateChanged(this.auth, (user: User | null) => {
@@ -104,7 +121,7 @@ export class AuthService {
 
       // Update user profile with display name if provided
       if (displayName && user) {
-        await user.updateProfile({ displayName });
+        await updateProfile(user, { displayName });
       }
 
       return {
