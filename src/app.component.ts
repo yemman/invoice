@@ -27,6 +27,9 @@ export class AppComponent {
   // Simple state machine for the view
   view = signal<'dashboard' | 'upload' | 'verify'>('dashboard');
   
+  // Mobile sidebar state
+  sidebarOpen = signal(false);
+  
   // Temporary holding for data being processed
   currentExtractedData = signal<Partial<Invoice> | null>(null);
 
@@ -76,5 +79,13 @@ export class AppComponent {
     } catch (error: any) {
       this.messageService.error(error.message || 'Failed to sign out');
     }
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen.set(!this.sidebarOpen());
+  }
+
+  closeSidebar() {
+    this.sidebarOpen.set(false);
   }
 }

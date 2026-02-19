@@ -12,9 +12,20 @@ import { CatalogService } from '../../../services/catalog.service';
 export class CatalogCardComponent {
   @Output() manage = new EventEmitter<void>();
 
+  expanded = false;
+
   constructor(public catalogService: CatalogService) {}
 
   openManage() {
     this.manage.emit();
+  }
+
+  toggleExpand() {
+    this.expanded = !this.expanded;
+    if (this.expanded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   }
 }

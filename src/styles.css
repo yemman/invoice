@@ -1,2 +1,127 @@
 @import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
 @import "tailwindcss";
+
+/* Custom animations for mobile-friendly UI */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 300ms ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 300ms ease-out;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 300ms ease-out;
+}
+
+/* Smooth scrolling for better mobile experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Touch-friendly tap targets (minimum 44x44px) */
+button, 
+a, 
+input[type="checkbox"],
+input[type="radio"] {
+  min-height: 44px;
+}
+
+/* Ensure text is not too small on mobile devices */
+@media (max-width: 640px) {
+  body {
+    font-size: 16px; /* Prevents auto-zoom on iOS */
+  }
+  
+  /* Improve touch targets on mobile */
+  button {
+    padding: 0.5rem;
+  }
+  
+  /* Make modals full width on mobile */
+  .fixed {
+    position: fixed;
+  }
+}
+
+/* Make card components inside grids scrollable:
+   - Ensure grid children can shrink (min-height: 0) so their internal
+     overflowed areas can scroll.
+   - Force grid children to be column flex containers so `.grow` /
+     `.overflow-y-auto` inside components expand correctly.
+   - Enable smooth native scrolling on mobile.
+*/
+.grid > * {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+.grid > * .overflow-y-auto,
+.grid > * .grow {
+  min-height: 0;
+}
+
+/* Better touch scrolling on iOS */
+.grid > * .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fullscreen / expanded card styles */
+.card-expanded {
+  position: fixed !important;
+  inset: 1rem !important;
+  z-index: 1100 !important;
+  width: calc(100% - 2rem) !important;
+  height: calc(100% - 2rem) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 20px 40px rgba(2,6,23,0.4) !important;
+  background: white !important;
+}
+
+.card-expanded .overflow-y-auto {
+  /* ensure inner scrollers use available height */
+  max-height: calc(100% - 80px);
+}
+
+.card-expand-btn {
+  background: transparent;
+  border: 1px solid rgba(148,163,184,0.12);
+  padding: 0.375rem;
+  border-radius: 0.5rem;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-expand-btn:hover { background: rgba(2,6,23,0.03); }

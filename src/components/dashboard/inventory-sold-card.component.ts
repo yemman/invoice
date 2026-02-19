@@ -10,5 +10,16 @@ import { InvoiceService } from '../../services/invoice.service';
   styleUrls: ['./inventory-sold-card.component.css']
 })
 export class InventorySoldCardComponent {
+  expanded = false;
+
   constructor(public invoiceService: InvoiceService) {}
+
+  toggleExpand() {
+    this.expanded = !this.expanded;
+    if (this.expanded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 }

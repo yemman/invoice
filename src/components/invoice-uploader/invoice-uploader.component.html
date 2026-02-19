@@ -1,5 +1,5 @@
 <div class="h-full flex flex-col">
-  <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative min-h-[300px]"
+  <div class="border-2 border-dashed border-slate-300 rounded-lg md:rounded-xl p-4 md:p-8 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative min-h-[250px] md:min-h-[300px]"
        (dragover)="onDragOver($event)"
        (drop)="onDrop($event)">
     
@@ -10,18 +10,18 @@
 
     @if (!previewUrl()) {
       <div class="text-center pointer-events-none">
-        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="fa-solid fa-cloud-arrow-up w-8 h-8" aria-hidden="true"></i>
+        <div class="w-12 md:w-16 h-12 md:h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
+          <i class="fa-solid fa-cloud-arrow-up w-6 md:w-8 h-6 md:h-8" aria-hidden="true"></i>
         </div>
-        <h3 class="text-lg font-semibold text-slate-700">Upload Invoice</h3>
-        <p class="text-slate-500 mt-2">Drag & drop or click to select</p>
+        <h3 class="text-base md:text-lg font-semibold text-slate-700">Upload Invoice</h3>
+        <p class="text-slate-500 mt-1 text-sm md:text-base">Drag & drop or click to select</p>
         <p class="text-xs text-slate-400 mt-1">Supports JPG, PNG</p>
       </div>
     } @else {
       <div class="relative w-full h-full flex items-center justify-center bg-slate-900/5 rounded-lg overflow-hidden">
-         <img [src]="previewUrl()" class="max-h-[280px] object-contain shadow-sm" alt="Invoice Preview">
+         <img [src]="previewUrl()" class="max-h-[200px] md:max-h-[280px] object-contain shadow-sm" alt="Invoice Preview">
          <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
-            <span class="text-white font-medium bg-black/50 px-3 py-1 rounded-full">Change Image</span>
+            <span class="text-white font-medium bg-black/50 px-3 py-1 rounded-full text-sm">Change Image</span>
          </div>
       </div>
     }
@@ -30,12 +30,12 @@
   @if (previewUrl()) {
       <button (click)="processImage()" 
             [disabled]="isProcessing()"
-            class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2">
+            class="mt-4 md:mt-6 w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 md:py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-sm md:text-base">
       @if (isProcessing()) {
-        <i class="fa-solid fa-spinner fa-spin h-5 w-5 text-white" aria-hidden="true"></i>
+        <i class="fa-solid fa-spinner fa-spin h-4 md:h-5 w-4 md:w-5 text-white" aria-hidden="true"></i>
         Processing with Gemini...
       } @else {
-        <i class="fa-solid fa-magic w-5 h-5" aria-hidden="true"></i>
+        <i class="fa-solid fa-magic w-4 md:w-5 h-4 md:h-5" aria-hidden="true"></i>
         Extract Data
       }
     </button>
