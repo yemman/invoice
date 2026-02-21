@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogService } from '../../services/catalog.service';
@@ -14,6 +14,16 @@ import { CatalogItem } from '../../models/catalog.model';
 })
 export class CatalogManagementComponent {
   protected catalogItems = this.catalogService.catalog;
+  protected searchQuery = signal('');
+  protected filteredCatalogItems = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    if (!query) return this.catalogItems();
+    return this.catalogItems().filter(item => 
+      item.name.toLowerCase().includes(query) || 
+      item.index.toString().includes(query) ||
+      item.id?.toLowerCase().includes(query)
+    );
+  });
   protected showForm = signal(false);
   protected isEditing = signal(false);
   protected selectedItem = signal<CatalogItem | null>(null);
