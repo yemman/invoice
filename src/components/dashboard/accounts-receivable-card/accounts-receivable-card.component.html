@@ -26,7 +26,7 @@
         @for (client of invoiceService.accountsReceivable(); track client.customer) {
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="px-5 py-3 font-medium text-slate-700">{{ client.customer }}</td>
-            <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold">{{ client.amount | currency }}</td>
+            <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold">{{ client.amount | currency:'ILS' }}</td>
             <td class="px-5 py-3 text-right">
               <button (click)="openInvoices(client.customer)" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium border border-indigo-200 hover:bg-indigo-50 px-2 py-1 rounded">
                 View Invoices
