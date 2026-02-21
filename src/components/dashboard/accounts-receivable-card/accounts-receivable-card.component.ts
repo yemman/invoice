@@ -12,7 +12,18 @@ import { InvoiceService } from '../../../services/invoice.service';
 export class AccountsReceivableCardComponent {
   @Output() selectCustomer = new EventEmitter<string>();
 
+  expanded = false;
+
   constructor(public invoiceService: InvoiceService) {}
+
+  toggleExpand() {
+    this.expanded = !this.expanded;
+    if (this.expanded) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 
   openInvoices(customer: string) {
     this.selectCustomer.emit(customer);

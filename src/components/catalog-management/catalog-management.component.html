@@ -1,14 +1,14 @@
-<div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+<div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 p-3 md:p-6">
   
   <!-- Header -->
-  <div class="mb-6">
-    <div class="flex justify-between items-center mb-2">
+  <div class="mb-3 md:mb-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0 mb-2">
       <div>
-        <h2 class="text-3xl font-bold text-slate-800">Catalog Management</h2>
-        <p class="text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Catalog Management</h2>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
       </div>
-      <button (click)="openAddForm()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium">
-        <i class="fa-solid fa-plus w-5 h-5" aria-hidden="true"></i>
+      <button (click)="openAddForm()" class="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium text-sm md:text-base w-full md:w-auto justify-center md:justify-start">
+        <i class="fa-solid fa-plus w-4 md:w-5 h-4 md:h-5" aria-hidden="true"></i>
         Add Item
       </button>
     </div>
@@ -16,28 +16,28 @@
 
   <!-- Modal -->
   @if (showForm()) {
-    <div class="fixed inset-0 bg-black/60 flex justify-center items-center z-50 animate-fadeIn">
-      <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-slideUp">
+    <div class="fixed inset-0 bg-black/60 flex justify-center items-center z-50 animate-fadeIn p-4">
+      <div class="bg-white rounded-lg md:rounded-xl shadow-2xl max-w-md w-full overflow-hidden animate-slideUp max-h-[90vh] overflow-y-auto">
         
         <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-slate-200">
-          <h3 class="text-xl font-bold text-slate-800">
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-4 md:px-6 py-3 md:py-4 border-b border-slate-200 sticky top-0">
+          <h3 class="text-lg md:text-xl font-bold text-slate-800">
             {{ isEditing() ? '✏️ Edit' : '➕ Add' }} Catalog Item
           </h3>
         </div>
 
         <!-- Modal Body -->
-        <div class="p-6">
+        <div class="p-4 md:p-6">
           @if (error()) {
             <div class="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
               <p class="font-medium">{{ error() }}</p>
             </div>
           }
 
-          <form (ngSubmit)="saveItem()" class="space-y-4">
+          <form (ngSubmit)="saveItem()" class="space-y-3 md:space-y-4">
             <!-- Index Number -->
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-2">
                 Index Number <span class="text-red-500">*</span>
               </label>
               <input 
@@ -45,14 +45,14 @@
                 [(ngModel)]="formData().index" 
                 name="index" 
                 required
-                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-3 md:px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                 placeholder="e.g., 101"
               >
             </div>
 
             <!-- Item Name -->
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-2">
                 Item Name <span class="text-red-500">*</span>
               </label>
               <input 
@@ -60,39 +60,39 @@
                 [(ngModel)]="formData().name" 
                 name="name" 
                 required
-                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-3 md:px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                 placeholder="e.g., Dinner Fork"
               >
             </div>
 
             <!-- Box Quantity -->
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-2">
                 Box Quantity
               </label>
               <input 
                 type="number" 
                 [(ngModel)]="formData().box_quantety" 
                 name="box_quantety" 
-                class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                class="w-full px-3 md:px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                 placeholder="e.g., 24"
               >
             </div>
 
             <!-- Unit Price -->
             <div>
-              <label class="block text-sm font-semibold text-slate-700 mb-2">
+              <label class="block text-xs md:text-sm font-semibold text-slate-700 mb-2">
                 Unit Price <span class="text-red-500">*</span>
               </label>
               <div class="relative">
-                <span class="absolute left-4 top-2.5 text-slate-500 font-medium">$</span>
+                <span class="absolute left-3 md:left-4 top-2.5 text-slate-500 font-medium">$</span>
                 <input 
                   type="number" 
                   [(ngModel)]="formData().unit_price" 
                   name="unit_price" 
                   step="0.01" 
                   required
-                  class="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  class="w-full pl-7 md:pl-8 pr-3 md:pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                   placeholder="0.00"
                 >
               </div>
@@ -105,18 +105,18 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex gap-3 pt-4 border-t border-slate-200">
+            <div class="flex gap-2 md:gap-3 pt-3 md:pt-4 border-t border-slate-200">
               <button 
                 type="button" 
                 (click)="closeForm()" 
-                class="flex-1 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-colors"
+                class="flex-1 px-3 md:px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-colors text-sm md:text-base"
               >
                 Cancel
               </button>
               <button 
                 type="submit" 
                 [disabled]="loading()" 
-                class="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all"
+                class="flex-1 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all text-sm md:text-base"
               >
                 {{ loading() ? '⏳ Saving...' : '✓ Save' }}
               </button>
@@ -128,23 +128,24 @@
   }
 
   <!-- Table Card -->
-  <div class="bg-white rounded-xl shadow-md border border-slate-200 flex flex-col overflow-hidden flex-1">
+  <div class="bg-white rounded-lg md:rounded-xl shadow-md border border-slate-200 flex flex-col overflow-hidden flex-1">
     
     <!-- Card Header -->
-    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
+    <div class="p-3 md:p-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-blue-50 to-white">
       <div>
-        <h3 class="font-bold text-slate-800 text-lg">Products</h3>
-        <p class="text-sm text-slate-500">{{ catalogItems().length }} items in catalog</p>
+        <h3 class="font-bold text-slate-800 text-base md:text-lg">Products</h3>
+        <p class="text-xs md:text-sm text-slate-500">{{ catalogItems().length }} items in catalog</p>
       </div>
-      <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-        <i class="fa-solid fa-boxes w-6 h-6" aria-hidden="true"></i>
+      <div class="p-2 bg-blue-100 text-blue-600 rounded-lg shrink-0">
+        <i class="fa-solid fa-boxes w-5 md:w-6 h-5 md:h-6" aria-hidden="true"></i>
       </div>
     </div>
 
     <!-- Table Content -->
     <div class="overflow-y-auto p-0 grow">
       @if (catalogItems().length > 0) {
-        <table class="w-full text-left border-collapse">
+        <!-- Desktop Table View -->
+        <table class="hidden md:table w-full text-left border-collapse">
           <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold sticky top-0">
             <tr>
               <th class="px-5 py-3 border-b">ID</th>
@@ -160,13 +161,13 @@
           <tbody class="divide-y divide-slate-100">
             @for (item of catalogItems(); track item.id) {
               <tr class="hover:bg-slate-50 transition-colors">
-                <td class="px-5 py-3 font-mono font-semibold text-slate-700">{{ item.id }}</td>
-                <td class="px-5 py-3 font-mono text-slate-700">{{ item.index }}</td>
-                <td class="px-5 py-3 font-medium text-slate-700 capitalize">{{ item.name }}</td>
+                <td class="px-5 py-3 font-mono font-semibold text-slate-700 text-sm">{{ item.id }}</td>
+                <td class="px-5 py-3 font-mono text-slate-700 text-sm">{{ item.index }}</td>
+                <td class="px-5 py-3 font-medium text-slate-700 capitalize text-sm">{{ item.name }}</td>
                 <td class="px-5 py-3 text-sm text-slate-500">{{ item.box_quantety ?? '—' }}</td>
-                <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold">{{ item.unit_price | currency }}</td>
+                <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold text-sm">{{ item.unit_price | currency }}</td>
                 <td class="px-5 py-3 text-sm text-slate-500">{{ item.createdAt ? (item.createdAt | date) : '—' }}</td>
-                <td class="px-5 py-3 text-center">
+                <td class="px-5 py-3 text-center text-sm">
                   <span class="inline-block px-2 py-1 text-xs rounded-full" [class]="item.is_print ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'">
                     {{ item.is_print ? 'Yes' : 'No' }}
                   </span>
@@ -174,14 +175,14 @@
                 <td class="px-5 py-3 text-right space-x-2">
                   <button 
                     (click)="openEditForm(item)" 
-                    class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all"
+                    class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded transition-all"
                   >
                     <i class="fa-solid fa-pen w-4 h-4" aria-hidden="true"></i>
                     Edit
                   </button>
                   <button 
                     (click)="deleteItem(item)" 
-                    class="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all"
+                    class="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded transition-all"
                   >
                     <i class="fa-solid fa-trash w-4 h-4" aria-hidden="true"></i>
                     Delete
@@ -191,11 +192,46 @@
             }
           </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden space-y-2 p-3">
+          @for (item of catalogItems(); track item.id) {
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-100">
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                  <p class="font-bold text-slate-800 text-sm capitalize">{{ item.name }}</p>
+                  <p class="text-xs text-slate-500">#{{ item.index }}</p>
+                </div>
+                <p class="font-bold text-emerald-700 text-sm">{{ item.unit_price | currency }}</p>
+              </div>
+              <div class="text-xs text-slate-600 mb-3 space-y-1">
+                <p>Box Qty: {{ item.box_quantety ?? '—' }}</p>
+                <p>Print: <span class="inline-block px-2 py-0.5 rounded-full text-xs" [class]="item.is_print ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'">{{ item.is_print ? 'Yes' : 'No' }}</span></p>
+              </div>
+              <div class="flex gap-2">
+                <button 
+                  (click)="openEditForm(item)" 
+                  class="flex-1 flex items-center justify-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium border border-blue-200 hover:bg-blue-50 px-2 py-1.5 rounded transition-all"
+                >
+                  <i class="fa-solid fa-pen w-3 h-3" aria-hidden="true"></i>
+                  Edit
+                </button>
+                <button 
+                  (click)="deleteItem(item)" 
+                  class="flex-1 flex items-center justify-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium border border-red-200 hover:bg-red-50 px-2 py-1.5 rounded transition-all"
+                >
+                  <i class="fa-solid fa-trash w-3 h-3" aria-hidden="true"></i>
+                  Delete
+                </button>
+              </div>
+            </div>
+          }
+        </div>
       } @else {
-        <div class="flex flex-col items-center justify-center p-12 text-center">
-          <i class="fa-solid fa-box-open w-12 h-12 text-slate-300 mb-4" aria-hidden="true"></i>
-          <p class="text-slate-400 font-medium">No catalog items yet</p>
-          <p class="text-slate-300 text-sm mt-1">Click "Add Item" to get started</p>
+        <div class="flex flex-col items-center justify-center p-8 md:p-12 text-center">
+          <i class="fa-solid fa-box-open w-10 md:w-12 h-10 md:h-12 text-slate-300 mb-3 md:mb-4" aria-hidden="true"></i>
+          <p class="text-slate-400 font-medium text-sm md:text-base">No catalog items yet</p>
+          <p class="text-slate-300 text-xs md:text-sm mt-1">Click "Add Item" to get started</p>
         </div>
       }
     </div>

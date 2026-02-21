@@ -1,13 +1,7 @@
 @if (!showCatalogManagement()) {
-  <div class="w-full h-full flex flex-col">
-    <!-- Dashboard Header -->
-    <div class="mb-6">
-      <h2 class="text-3xl font-bold text-slate-800">Dashboard</h2>
-      <p class="text-sm text-slate-500 mt-1">Overview of your business metrics</p>
-    </div>
-
-    <!-- Cards Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 overflow-hidden">
+  <div class="w-full h-full flex flex-col gap-3 md:gap-6">
+    <!-- Cards Grid - Responsive -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 flex-1 overflow-hidden">
       <app-inventory-sold-card></app-inventory-sold-card>
       <app-accounts-receivable-card (selectCustomer)="selectCustomer($event)"></app-accounts-receivable-card>
       <app-catalog-card (manage)="toggleCatalogManagement()"></app-catalog-card>
@@ -22,19 +16,19 @@
     ></app-customer-invoices>
   </div>
 } @else {
-  <div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
+  <div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg">
     <!-- Catalog Header with Back Button -->
-    <div class="mb-4 flex justify-between items-center">
+    <div class="mb-3 md:mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0">
       <div>
-        <h2 class="text-3xl font-bold text-slate-800">Catalog Management</h2>
-        <p class="text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Catalog Management</h2>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
       </div>
       <button 
         (click)="toggleCatalogManagement()"
-        class="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-all duration-200"
+        class="flex items-center gap-2 px-3 md:px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-all duration-200 text-sm md:text-base"
       >
-        <i class="fa-solid fa-arrow-left w-5 h-5" aria-hidden="true"></i>
-        Back to Dashboard
+        <i class="fa-solid fa-arrow-left w-4 md:w-5 h-4 md:h-5" aria-hidden="true"></i>
+        Back
       </button>
     </div>
     

@@ -1,61 +1,61 @@
 {
-  "hash": "5e1606da",
+  "hash": "ba8096d7",
   "configHash": "ad05bcd0",
-  "lockfileHash": "bed04241",
-  "browserHash": "e6df027f",
+  "lockfileHash": "0b266b59",
+  "browserHash": "b13f4c33",
   "optimized": {
     "@angular/common": {
       "src": "../../../../../../node_modules/@angular/common/fesm2022/common.mjs",
       "file": "@angular_common.js",
-      "fileHash": "c7a8c9d8",
+      "fileHash": "012e3596",
       "needsInterop": false
     },
     "@angular/compiler": {
       "src": "../../../../../../node_modules/@angular/compiler/fesm2022/compiler.mjs",
       "file": "@angular_compiler.js",
-      "fileHash": "375f0a35",
+      "fileHash": "dc3ef8b3",
       "needsInterop": false
     },
     "@angular/core": {
       "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
       "file": "@angular_core.js",
-      "fileHash": "4678aa44",
+      "fileHash": "932de801",
       "needsInterop": false
     },
     "@angular/forms": {
       "src": "../../../../../../node_modules/@angular/forms/fesm2022/forms.mjs",
       "file": "@angular_forms.js",
-      "fileHash": "1f9c3dcd",
+      "fileHash": "cdf6f34b",
       "needsInterop": false
     },
     "@angular/platform-browser": {
       "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
       "file": "@angular_platform-browser.js",
-      "fileHash": "ae6a0e71",
+      "fileHash": "ec83e233",
       "needsInterop": false
     },
     "@google/genai": {
       "src": "../../../../../../node_modules/@google/genai/dist/web/index.mjs",
       "file": "@google_genai.js",
-      "fileHash": "465b2d90",
+      "fileHash": "3930457d",
       "needsInterop": false
     },
     "firebase/app": {
       "src": "../../../../../../node_modules/firebase/app/dist/esm/index.esm.js",
       "file": "firebase_app.js",
-      "fileHash": "071f4cd7",
+      "fileHash": "a3311d3b",
       "needsInterop": false
     },
     "firebase/auth": {
       "src": "../../../../../../node_modules/firebase/auth/dist/esm/index.esm.js",
       "file": "firebase_auth.js",
-      "fileHash": "1d62c8bc",
+      "fileHash": "54862276",
       "needsInterop": false
     },
     "firebase/firestore": {
       "src": "../../../../../../node_modules/firebase/firestore/dist/esm/index.esm.js",
       "file": "firebase_firestore.js",
-      "fileHash": "71ad6bd9",
+      "fileHash": "5105a55d",
       "needsInterop": false
     }
   },
