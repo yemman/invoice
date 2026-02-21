@@ -85,7 +85,7 @@
                 Unit Price <span class="text-red-500">*</span>
               </label>
               <div class="relative">
-                <span class="absolute left-3 md:left-4 top-2.5 text-slate-500 font-medium">$</span>
+                <span class="absolute left-3 md:left-4 top-2.5 text-slate-500 font-medium">₪</span>
                 <input 
                   type="number" 
                   [(ngModel)]="formData().unit_price" 
@@ -165,8 +165,8 @@
                 <td class="px-5 py-3 font-mono text-slate-700 text-sm">{{ item.index }}</td>
                 <td class="px-5 py-3 font-medium text-slate-700 capitalize text-sm">{{ item.name }}</td>
                 <td class="px-5 py-3 text-sm text-slate-500">{{ item.box_quantety ?? '—' }}</td>
-                <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold text-sm">{{ item.unit_price | currency }}</td>
-                <td class="px-5 py-3 text-sm text-slate-500">{{ item.createdAt ? (item.createdAt | date) : '—' }}</td>
+                <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold text-sm">{{ item.unit_price | currency:'ILS' }}</td>
+                <td class="px-5 py-3 text-sm text-slate-500">{{ item.createdAt ? (item.createdAt.toDate() | date) : '—' }}</td>
                 <td class="px-5 py-3 text-center text-sm">
                   <span class="inline-block px-2 py-1 text-xs rounded-full" [class]="item.is_print ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'">
                     {{ item.is_print ? 'Yes' : 'No' }}
@@ -202,7 +202,7 @@
                   <p class="font-bold text-slate-800 text-sm capitalize">{{ item.name }}</p>
                   <p class="text-xs text-slate-500">#{{ item.index }}</p>
                 </div>
-                <p class="font-bold text-emerald-700 text-sm">{{ item.unit_price | currency }}</p>
+                <p class="font-bold text-emerald-700 text-sm">{{ item.unit_price | currency:'ILS' }}</p>
               </div>
               <div class="text-xs text-slate-600 mb-3 space-y-1">
                 <p>Box Qty: {{ item.box_quantety ?? '—' }}</p>
