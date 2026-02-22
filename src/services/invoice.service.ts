@@ -1,16 +1,21 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { GoogleGenAI, Type } from "@google/genai";
 import { Invoice, InvoiceItem } from '../models/invoice.model';
 import { CatalogService } from './catalog.service';
 import { MessageService } from './message.service';
 import { environment } from '../../environments/environment';
 import { FirebaseService } from './firebase.service';
+import { ErrorHandlerService } from './error-handler.service';
+import { AppConstantsService } from './app-constants.service';
+import { CalculationUtilityService } from './calculation-utility.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InvoiceService {
-  private readonly COLLECTION_NAME = 'invoices';
+  private errorHandler = inject(ErrorHandlerService);
+  private constants = inject(AppConstantsService);
+  private calculation = inject(CalculationUtilityService);
 
   // --- State ---
   private invoicesSignal = signal<Invoice[]>([]);
@@ -23,24 +28,20 @@ export class InvoiceService {
     const needs: Record<string, number> = {};
     this.invoicesSignal().forEach(inv => {
       inv.items.forEach(item => {
-        const key = item.name.toLowerCase().trim();
+        const key = this.calculation.normalize(item.name);
         needs[key] = (needs[key] || 0) + item.quantity;
       });
     });
-    return Object.entries(needs)
-      .map(([name, total]) => ({ name, total }))
-      .sort((a, b) => b.total - a.total);
+    return this.calculation.groupedToSortedArray(needs, 'name', 'total');
   });
 
   readonly accountsReceivable = computed(() => {
     const receivables: Record<string, number> = {};
     this.invoicesSignal().forEach(inv => {
-      const key = inv.customer_name.trim();
+      const key = this.calculation.normalize(inv.customer_name);
       receivables[key] = (receivables[key] || 0) + inv.totalAmount;
     });
-    return Object.entries(receivables)
-      .map(([customer, amount]) => ({ customer, amount }))
-      .sort((a, b) => b.amount - a.amount);
+    return this.calculation.groupedToSortedArray(receivables, 'customer', 'amount');
   });
 
   readonly totalRevenue = computed(() => {
@@ -55,7 +56,7 @@ export class InvoiceService {
     try {
       await this.firebaseService.updateInvoice(id, updates);
     } catch (error) {
-      console.error("Failed to update invoice:", error);
+      this.errorHandler.handleError('updateInvoice', error);
       throw error;
     }
   }
@@ -64,7 +65,7 @@ export class InvoiceService {
     try {
       await this.firebaseService.deleteInvoice(id);
     } catch (error) {
-      console.error("Failed to delete invoice:", error);
+      this.errorHandler.handleError('deleteInvoice', error);
       throw error;
     }
   }
@@ -73,44 +74,23 @@ export class InvoiceService {
     this.firebaseService.subscribeToInvoices(
       (invoices) => this.invoicesSignal.set(invoices),
       (error) => {
-        console.error("Failed to load invoices:", error);
+        this.errorHandler.handleError('subscribeToInvoices', error, 'Failed to load invoices');
         this.invoicesSignal.set(this.getFallbackData());
       }
     );
   }
 
   async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
-    let apiKey = '';
-
-    if(!environment.production){
-      apiKey = environment.apiKey;
-    }
-    else{
-      apiKey = typeof process !== 'undefined' ? process.env['API_KEY'] : '';
-    }
-
+    const apiKey = this.getApiKey();
     if (!apiKey) {   
-      throw new Error('API Key is missing');
+      throw new Error(this.constants.ERROR_API_KEY_MISSING);
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    
-    // Updated schema based on specific OCR requirements (Index/Quantity)
-    const schema = {
-      type: Type.ARRAY,
-      items: {
-        type: Type.OBJECT,
-        properties: {
-          index: { type: Type.INTEGER },
-          quantity: { type: Type.INTEGER }
-        },
-        required: ["index", "quantity"]
-      }
-    };
 
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: this.constants.GEMINI_MODEL,
         contents: {
           parts: [
             {
@@ -120,48 +100,32 @@ export class InvoiceService {
               }
             },
             {
-              text: "You are an OCR expert. Analyze the provided image of a flatware invoice. Look at the far-right column for the index number (1-999). Look at the far-left column for handwritten quantities. These are the items the customer wants. Extract only the rows where there is a handwritten value in the far-left column. Return a JSON array of objects with these keys: index and quantity. Ensure that a handwritten '4' next to index '13' is correctly mapped as { 'index': 13, 'quantity': 4 }."
+              text: this.constants.GEMINI_PROMPT
             }
           ]
         },
         config: {
           responseMimeType: 'application/json',
-          responseSchema: schema,
-          temperature: 0.1
+          responseSchema: this.constants.GEMINI_ITEM_SCHEMA,
+          temperature: this.constants.GEMINI_TEMPERATURE
         }
       });
 
       const text = response.text;
-      if (!text) throw new Error("No data extracted");
+      if (!text) throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
       
-      // The response is strictly [{index, quantity}].
-      const rawData = JSON.parse(text); 
-      
-      // Map back to application domain model (InvoiceItem)
-      const items: InvoiceItem[] = rawData.map((item: any) => {
-        const catalog = this.catalogService.getCatalogItemByIndex(item.index);
-        const unitPrice = catalog ? catalog.unit_price : 0;
-        const name = catalog ? catalog.name : `Catalog Item #${item.index}`;
-        return {
-          name: name,
-          quantity: item.quantity,
-          unit_price: unitPrice,
-          total_price: unitPrice * item.quantity,
-          catalogId: catalog?.id,
-          catalogIndex: item.index
-        } as InvoiceItem;
-      });
+      const rawData = JSON.parse(text);
+      const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
 
-      // Return a Partial<Invoice> that the UI expects
       return {
-        customer_name: "Unknown Customer",
+        customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
         invoice_date: new Date().toISOString().split('T')[0],
-        invoice_number: "PENDING",
+        invoice_number: this.constants.PENDING_INVOICE_NUMBER,
         items: items
       };
 
     } catch (error) {
-      console.error("Gemini Extraction Error:", error);
+      this.errorHandler.handleError('analyzeInvoiceImage', error, 'Gemini Extraction Error');
       throw error;
     }
   }
@@ -169,11 +133,35 @@ export class InvoiceService {
   async addInvoice(invoiceData: Partial<Invoice>) {
     try {
       await this.firebaseService.addInvoice(invoiceData);
-      this.messageService.success('Invoice saved');
+      this.messageService.success(this.constants.SUCCESS_INVOICE_SAVED);
     } catch (error) {
-      this.messageService.error("Failed to save to database. Check console for details.");
+      this.messageService.error(this.constants.FAILURE_SAVE_INVOICE);
+      this.errorHandler.handleError('addInvoice', error);
       throw error;
     }
+  }
+
+  private getApiKey(): string {
+    if(!environment.production){
+      return environment.apiKey;
+    }
+    return typeof process !== 'undefined' ? process.env[this.constants.API_KEY_ENV_VAR] || '' : '';
+  }
+
+  private mapToInvoiceItems(rawData: any[]): InvoiceItem[] {
+    return rawData.map((item: any) => {
+      const catalog = this.catalogService.getCatalogItemByIndex(item.index);
+      const unitPrice = catalog ? catalog.unit_price : 0;
+      const name = catalog ? catalog.name : `${this.constants.DEFAULT_CATALOG_ITEM_NAME_TEMPLATE}${item.index}`;
+      return {
+        name: name,
+        quantity: item.quantity,
+        unit_price: unitPrice,
+        total_price: this.calculation.calculateItemTotal(item.quantity, unitPrice),
+        catalogId: catalog?.id,
+        catalogIndex: item.index
+      } as InvoiceItem;
+    });
   }
 
   private getFallbackData(): Invoice[] {

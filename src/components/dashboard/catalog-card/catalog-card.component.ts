@@ -1,18 +1,19 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CatalogService } from '../../../services/catalog.service';
+import { ExpandableCardService } from '../../../services/expandable-card.service';
 
 @Component({
   selector: 'app-catalog-card',
   standalone: true,
   imports: [CommonModule],
+  providers: [ExpandableCardService],
   templateUrl: './catalog-card.component.html',
   styleUrls: ['./catalog-card.component.css']
 })
 export class CatalogCardComponent {
   @Output() manage = new EventEmitter<void>();
-
-  expanded = false;
+  protected expandableCard = inject(ExpandableCardService);
 
   constructor(public catalogService: CatalogService) {}
 
@@ -21,11 +22,10 @@ export class CatalogCardComponent {
   }
 
   toggleExpand() {
-    this.expanded = !this.expanded;
-    if (this.expanded) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    this.expandableCard.toggleExpand();
+  }
+
+  get expanded() {
+    return this.expandableCard.expanded();
   }
 }

@@ -1,25 +1,26 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from '../../services/invoice.service';
+import { ExpandableCardService } from '../../services/expandable-card.service';
 
 @Component({
   selector: 'app-inventory-sold-card',
   standalone: true,
   imports: [CommonModule],
+  providers: [ExpandableCardService],
   templateUrl: './inventory-sold-card.component.html',
   styleUrls: ['./inventory-sold-card.component.css']
 })
 export class InventorySoldCardComponent {
-  expanded = false;
+  protected expandableCard = inject(ExpandableCardService);
 
   constructor(public invoiceService: InvoiceService) {}
 
   toggleExpand() {
-    this.expanded = !this.expanded;
-    if (this.expanded) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    this.expandableCard.toggleExpand();
+  }
+
+  get expanded() {
+    return this.expandableCard.expanded();
   }
 }

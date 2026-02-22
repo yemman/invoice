@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { CalculationUtilityService } from './calculation-utility.service';
 
 export type MessageType = 'success' | 'error' | 'info' | 'warning';
 
@@ -16,6 +17,7 @@ export interface ConfirmRequestView {
 
 @Injectable({ providedIn: 'root' })
 export class MessageService {
+  private calculation = inject(CalculationUtilityService);
   private messagesSignal = signal<Message[]>([]);
   private confirmSignal = signal<ConfirmRequestView[]>([]);
   private confirmResolvers = new Map<string, (value: boolean) => void>();
@@ -23,12 +25,8 @@ export class MessageService {
   readonly messages = this.messagesSignal.asReadonly();
   readonly confirms = this.confirmSignal.asReadonly();
 
-  private genId() {
-    return Math.random().toString(36).slice(2, 9);
-  }
-
   show(text: string, type: MessageType = 'info', timeout = 5000) {
-    const msg: Message = { id: this.genId(), text, type, timeout };
+    const msg: Message = { id: this.calculation.generateId(), text, type, timeout };
     this.messagesSignal.update(arr => [...arr, msg]);
     if (timeout && timeout > 0) {
       setTimeout(() => this.dismiss(msg.id), timeout);
@@ -47,7 +45,7 @@ export class MessageService {
 
   // Simple confirm wrapper for now; can be replaced with a modal implementation later
   async confirm(message: string): Promise<boolean> {
-    const id = this.genId();
+    const id = this.calculation.generateId();
     return new Promise<boolean>((resolve) => {
       this.confirmResolvers.set(id, resolve);
       this.confirmSignal.update(arr => [...arr, { id, message }]);
