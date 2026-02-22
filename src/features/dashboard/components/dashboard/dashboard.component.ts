@@ -5,6 +5,7 @@ import { MessageService } from '../../../../core/services/common/message.service
 import { CatalogService } from '../../../../core/services/data/catalog.service';
 import { CatalogManagementComponent } from '../../../catalog/components/catalog-management/catalog-management.component';
 import { CustomerInvoicesComponent } from '../customer-invoices/customer-invoices.component';
+import { InvoiceSearchComponent } from '../../../invoice/components/invoice-search/invoice-search.component';
 import { InventorySoldCardComponent } from '../dashboard-cards/inventory-sold-card/inventory-sold-card.component';
 import { AccountsReceivableCardComponent } from '../dashboard-cards/accounts-receivable-card/accounts-receivable-card.component';
 import { CatalogCardComponent } from '../dashboard-cards/catalog-card/catalog-card.component';
@@ -13,7 +14,7 @@ import { Invoice } from '../../../../core/models/invoice.model';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CatalogManagementComponent, CustomerInvoicesComponent, InventorySoldCardComponent, AccountsReceivableCardComponent, CatalogCardComponent],
+  imports: [CommonModule, CatalogManagementComponent, CustomerInvoicesComponent, InvoiceSearchComponent, InventorySoldCardComponent, AccountsReceivableCardComponent, CatalogCardComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -22,12 +23,17 @@ export class DashboardComponent {
   protected catalogService = inject(CatalogService);
   protected messageService = inject(MessageService);
   protected showCatalogManagement = signal(false); 
+  protected activeView = signal<'overview' | 'search'>('overview');
   protected selectedCustomer = signal<string | null>(null);
   protected customerInvoices = computed(() => {
     const name = this.selectedCustomer();
     if (!name) return [] as Invoice[];
     return this.invoiceService.invoices().filter(inv => inv.customer_name === name);
   });
+
+  switchView(view: 'overview' | 'search'): void {
+    this.activeView.set(view);
+  }
 
   selectCustomer(name: string) {
     this.selectedCustomer.set(name);

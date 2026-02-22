@@ -1,19 +1,65 @@
 @if (!showCatalogManagement()) {
   <div class="w-full h-full flex flex-col gap-3 md:gap-6">
-    <!-- Cards Grid - Responsive -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 flex-1 overflow-hidden">
-      <app-inventory-sold-card></app-inventory-sold-card>
-      <app-accounts-receivable-card (selectCustomer)="selectCustomer($event)"></app-accounts-receivable-card>
-      <app-catalog-card (manage)="toggleCatalogManagement()"></app-catalog-card>
+    <!-- View Tabs -->
+    <div class="flex gap-2 border-b border-slate-200">
+      <button
+        type="button"
+        (click)="switchView('overview')"
+        [class.border-b-2]="activeView() === 'overview'"
+        [class.border-emerald-500]="activeView() === 'overview'"
+        [class.text-emerald-600]="activeView() === 'overview'"
+        [class.font-semibold]="activeView() === 'overview'"
+        [class.text-slate-500]="activeView() !== 'overview'"
+        class="px-4 py-3 transition-colors hover:text-slate-700"
+        [attr.aria-selected]="activeView() === 'overview'"
+      >
+        <i class="fa-solid fa-chart-column mr-2"></i>Dashboard Overview
+      </button>
+      <button
+        type="button"
+        (click)="switchView('search')"
+        [class.border-b-2]="activeView() === 'search'"
+        [class.border-emerald-500]="activeView() === 'search'"
+        [class.text-emerald-600]="activeView() === 'search'"
+        [class.font-semibold]="activeView() === 'search'"
+        [class.text-slate-500]="activeView() !== 'search'"
+        class="px-4 py-3 transition-colors hover:text-slate-700"
+        [attr.aria-selected]="activeView() === 'search'"
+      >
+        <i class="fa-solid fa-magnifying-glass mr-2"></i>Advanced Search
+      </button>
     </div>
-    
-    <app-customer-invoices
-      [customerName]="selectedCustomer()"
-      [invoices]="customerInvoices()"
-      (close)="clearSelection()"
-      (edit)="onEditInvoice($event)"
-      (remove)="onDeleteInvoice($event)"
-    ></app-customer-invoices>
+
+    <!-- Overview View -->
+    @if (activeView() === 'overview') {
+      <div class="flex-1 overflow-auto space-y-3 md:space-y-6">
+        <!-- Cards Grid - Responsive -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          <app-inventory-sold-card></app-inventory-sold-card>
+          <app-accounts-receivable-card (selectCustomer)="selectCustomer($event)"></app-accounts-receivable-card>
+          <app-catalog-card (manage)="toggleCatalogManagement()"></app-catalog-card>
+        </div>
+        
+        <app-customer-invoices
+          [customerName]="selectedCustomer()"
+          [invoices]="customerInvoices()"
+          (close)="clearSelection()"
+          (edit)="onEditInvoice($event)"
+          (remove)="onDeleteInvoice($event)"
+        ></app-customer-invoices>
+      </div>
+    }
+
+    <!-- Search View -->
+    @if (activeView() === 'search') {
+      <div class="flex-1 overflow-auto">
+        <app-invoice-search
+          [invoices]="invoiceService.invoices()"
+          (edit)="onEditInvoice($event)"
+          (remove)="onDeleteInvoice($event)"
+        ></app-invoice-search>
+      </div>
+    }
   </div>
 } @else {
   <div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg">

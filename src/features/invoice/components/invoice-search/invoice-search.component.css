@@ -1,0 +1,46 @@
+/* Table responsive styling */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem;
+  }
+
+  td,
+  th {
+    padding: 0.5rem 0.25rem !important;
+  }
+
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+/* Summary grid responsive */
+@media (max-width: 640px) {
+  .grid-cols-2 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}
+
+/* Smooth row expand animation */
+@keyframes expandRow {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+tr:has(td app-invoice-detail) {
+  animation: expandRow 0.3s ease-out;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
