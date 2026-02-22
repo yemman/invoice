@@ -13,6 +13,7 @@ import { LoginComponent } from './components/auth/login.component';
 
 @Component({
     selector: 'app-root',
+    standalone: true,
     imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent, MessageToastComponent, ConfirmModalComponent, LoginComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',

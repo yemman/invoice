@@ -4,6 +4,7 @@ import { MessageService } from '../../services/message.service';
 
 @Component({
     selector: 'app-invoice-uploader',
+    standalone: true,
     imports: [],
     templateUrl: './invoice-uploader.component.html',
     styleUrl: './invoice-uploader.component.css',
