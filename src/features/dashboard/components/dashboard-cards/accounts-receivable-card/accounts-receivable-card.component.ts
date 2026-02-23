@@ -13,6 +13,7 @@ import { ExpandableCardService } from '../../../../../shared/services/expandable
 })
 export class AccountsReceivableCardComponent {
   @Output() selectCustomer = new EventEmitter<string>();
+  @Output() newInvoice = new EventEmitter<void>();
   protected expandableCard = inject(ExpandableCardService);
 
   constructor(public invoiceService: InvoiceService) {}

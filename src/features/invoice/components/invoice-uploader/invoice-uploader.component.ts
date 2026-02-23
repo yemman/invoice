@@ -12,6 +12,8 @@ import { MessageService } from '../../../../core/services/common/message.service
 })
 export class InvoiceUploaderComponent {
   imageSelected = output<string>(); // Emits base64 string
+  manualEntry = output<void>(); // trigger manual invoice creation
+
   isProcessing = signal(false);
   previewUrl = signal<string | null>(null);
   private messageService = inject(MessageService);

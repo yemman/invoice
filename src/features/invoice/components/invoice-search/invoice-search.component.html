@@ -67,6 +67,14 @@
         <i [class]="'fa-solid ' + getSortIcon('customer') + ' ' + getSortIconClass('customer')"></i>
         Customer
       </button>
+      <!-- new invoice button -->
+      <button
+        type="button"
+        (click)="create.emit()"
+        class="ml-auto px-3 py-1.5 rounded-md text-sm font-medium border border-slate-200 hover:border-indigo-300 transition-colors text-indigo-600 bg-indigo-50 hover:bg-indigo-100 flex items-center gap-1"
+      >
+        <i class="fa-solid fa-plus"></i> New Invoice
+      </button>
     </div>
   </div>
 

@@ -1,1 +1,8 @@
 .catalog-card { }
+
+
+/* rotate expand icon for visual feedback */
+.card-expanded .card-expand-btn i {
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}

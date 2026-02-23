@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogService } from '../../../../core/services/data/catalog.service';
@@ -13,6 +13,7 @@ import { CatalogItem } from '../../../../core/models/catalog.model';
   styleUrls: ['./catalog-management.component.css']
 })
 export class CatalogManagementComponent {
+  @Output() close = new EventEmitter<void>();
   protected catalogItems = this.catalogService.catalog;
   protected searchQuery = signal('');
   protected filteredCatalogItems = computed(() => {
@@ -39,6 +40,10 @@ export class CatalogManagementComponent {
   });
 
   constructor(private catalogService: CatalogService, private messageService: MessageService) {}
+
+  requestClose() {
+    this.close.emit();
+  }
 
   openAddForm() {
     this.formData.set({ index: 0, name: '', box_quantety: 0, unit_price: 0, is_print: false });

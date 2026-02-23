@@ -33,6 +33,7 @@
         <thead class="bg-slate-100 text-slate-600 font-semibold">
           <tr>
             <th class="px-4 py-3">Item Description</th>
+            <th class="px-4 py-3 w-24">Catalog #</th>
             <th class="px-4 py-3 w-24">Qty</th>
             <th class="px-4 py-3 w-32">Unit Price</th>
             <th class="px-4 py-3 w-32 text-right">Total</th>
@@ -45,6 +46,10 @@
               <td class="px-4 py-2">
                 <input type="text" [(ngModel)]="item.name" 
                        class="w-full bg-transparent border-none focus:ring-0 p-0 font-medium text-slate-700 placeholder-slate-400" placeholder="Item name">
+              </td>
+              <td class="px-4 py-2">
+                <input type="number" [(ngModel)]="item.catalogIndex" (change)="onCatalogIndexChange(item)"
+                       class="w-full bg-transparent border-none focus:ring-0 p-0 text-slate-600" placeholder="#">
               </td>
               <td class="px-4 py-2">
                 <input type="number" [(ngModel)]="item.quantity" (change)="recalcItem(item)"
@@ -70,7 +75,7 @@
           
           <!-- Add Item Row -->
           <tr>
-            <td colspan="5" class="px-4 py-2 bg-slate-50">
+            <td colspan="6" class="px-4 py-2 bg-slate-50">
               <button (click)="addItem()" class="text-indigo-600 text-sm font-medium hover:underline flex items-center gap-1">
                 <i class="fa-solid fa-plus w-4 h-4" aria-hidden="true"></i>
                 Add Item

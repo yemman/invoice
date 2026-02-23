@@ -92,7 +92,7 @@
       <div class="flex-1 overflow-hidden p-3 md:p-6 relative">
         <div class="max-w-6xl mx-auto h-full">
           @if (view() === 'dashboard') {
-            <app-dashboard class="h-full block" />
+            <app-dashboard class="h-full block" (manualInvoice)="startManualEntry()" (editInvoice)="handleDashboardEdit($event)" />
           } 
           
           @if (view() === 'upload') {
@@ -100,6 +100,7 @@
               <div class="w-full max-w-2xl px-2">
                 <app-invoice-uploader 
                   (imageSelected)="handleImageSelected($event)" 
+                  (manualEntry)="startManualEntry()"
                 />
               </div>
             </div>

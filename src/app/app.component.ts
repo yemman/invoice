@@ -54,8 +54,21 @@ export class AppComponent {
     }
   }
 
+  // user clicked manual entry button, open verification with blank invoice template
+  startManualEntry() {
+    // initialize minimal structure to avoid undefined loops and pre-fill today's date
+    const today = new Date().toISOString().split('T')[0];
+    this.currentExtractedData.set({ items: [], invoice_date: today });
+    this.view.set('verify');
+  }
+
   handleVerificationConfirm(data: Partial<Invoice>) {
-    this.invoiceService.addInvoice(data);
+    if (data.id) {
+      // existing invoice - update
+      this.invoiceService.updateInvoice(data.id, data);
+    } else {
+      this.invoiceService.addInvoice(data);
+    }
     this.currentExtractedData.set(null);
     this.view.set('dashboard');
   }
@@ -71,6 +84,13 @@ export class AppComponent {
 
   navigateToDashboard() {
     this.view.set('dashboard');
+  }
+
+  // invoked when dashboard requests an edit
+  handleDashboardEdit(inv: Invoice) {
+    // clone to avoid accidental mutation
+    this.currentExtractedData.set({ ...inv });
+    this.view.set('verify');
   }
 
   async handleSignOut() {

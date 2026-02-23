@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceItem } from '../../../../core/models/invoice.model';
 import { CalculationUtilityService } from '../../../../core/services/common/calculation-utility.service';
+import { CatalogService } from '../../../../core/services/data/catalog.service';
 
 @Component({
     selector: 'app-data-verification',
@@ -17,6 +18,7 @@ export class DataVerificationComponent {
   onCancel = output<void>();
 
   protected calculation = inject(CalculationUtilityService);
+  protected catalogService = inject(CatalogService);
   editableData = signal<Partial<Invoice>>({});
 
   constructor() {
@@ -39,8 +41,23 @@ export class DataVerificationComponent {
   addItem() {
     this.editableData.update(d => ({
       ...d,
-      items: [...(d.items || []), { name: '', quantity: 1, unit_price: 0, total_price: 0 }]
+      items: [...(d.items || []), { name: '', quantity: 1, unit_price: 0, total_price: 0, catalogIndex: undefined }]
     }));
+  }
+
+  onCatalogIndexChange(item: InvoiceItem) {
+    const idx = item.catalogIndex;
+    if (typeof idx === 'number' && idx > 0) {
+      const catalog = this.catalogService.getCatalogItemByIndex(idx);
+      if (catalog) {
+        item.name = catalog.name;
+        // fill unit_price if the user hasn't already entered a value
+        if (!item.unit_price) {
+          item.unit_price = catalog.unit_price;
+          this.recalcItem(item);
+        }
+      }
+    }
   }
 
   removeItem(index: number) {

@@ -21,6 +21,7 @@ export class InvoiceSearchComponent implements OnInit {
   @Input() invoices: Invoice[] = [];
   @Output() edit = new EventEmitter<Invoice>();
   @Output() remove = new EventEmitter<string>();
+  @Output() create = new EventEmitter<void>();
 
   private filterService = inject(InvoiceFilterService);
 

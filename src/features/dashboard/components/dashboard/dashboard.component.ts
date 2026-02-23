@@ -1,11 +1,10 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from '../../../../core/services/data/invoice.service';
 import { MessageService } from '../../../../core/services/common/message.service';
 import { CatalogService } from '../../../../core/services/data/catalog.service';
 import { CatalogManagementComponent } from '../../../catalog/components/catalog-management/catalog-management.component';
 import { CustomerInvoicesComponent } from '../customer-invoices/customer-invoices.component';
-import { InvoiceSearchComponent } from '../../../invoice/components/invoice-search/invoice-search.component';
 import { InventorySoldCardComponent } from '../dashboard-cards/inventory-sold-card/inventory-sold-card.component';
 import { AccountsReceivableCardComponent } from '../dashboard-cards/accounts-receivable-card/accounts-receivable-card.component';
 import { CatalogCardComponent } from '../dashboard-cards/catalog-card/catalog-card.component';
@@ -14,16 +13,18 @@ import { Invoice } from '../../../../core/models/invoice.model';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CatalogManagementComponent, CustomerInvoicesComponent, InvoiceSearchComponent, InventorySoldCardComponent, AccountsReceivableCardComponent, CatalogCardComponent],
+  imports: [CommonModule, CatalogManagementComponent, CustomerInvoicesComponent, InventorySoldCardComponent, AccountsReceivableCardComponent, CatalogCardComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
+  @Output() manualInvoice = new EventEmitter<void>();
+  @Output() editInvoice = new EventEmitter<Invoice>();
+
   protected invoiceService = inject(InvoiceService);
   protected catalogService = inject(CatalogService);
   protected messageService = inject(MessageService);
   protected showCatalogManagement = signal(false); 
-  protected activeView = signal<'overview' | 'search'>('overview');
   protected selectedCustomer = signal<string | null>(null);
   protected customerInvoices = computed(() => {
     const name = this.selectedCustomer();
@@ -31,9 +32,6 @@ export class DashboardComponent {
     return this.invoiceService.invoices().filter(inv => inv.customer_name === name);
   });
 
-  switchView(view: 'overview' | 'search'): void {
-    this.activeView.set(view);
-  }
 
   selectCustomer(name: string) {
     this.selectedCustomer.set(name);
@@ -47,16 +45,9 @@ export class DashboardComponent {
     this.showCatalogManagement.set(!this.showCatalogManagement());
   }
 
-  async onEditInvoice(inv: Invoice) {
-    const newName = prompt('Edit customer name', inv.customer_name);
-    if (newName === null) return; // cancelled
-    const newStatus = prompt('Edit status (verified|draft)', inv.status) || inv.status;
-    try {
-      await this.invoiceService.updateInvoice(inv.id, { customer_name: newName, status: newStatus as any });
-      this.messageService.success('Invoice updated');
-    } catch (e) {
-      this.messageService.error('Failed to update invoice. See console.');
-    }
+  onEditInvoice(inv: Invoice) {
+    // forward to parent for full verification/edit form
+    this.editInvoice.emit(inv);
   }
 
   async onDeleteInvoice(id: string) {

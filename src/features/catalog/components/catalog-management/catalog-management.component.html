@@ -3,15 +3,22 @@
   <!-- Header -->
   <div class="mb-3 md:mb-6">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-0 mb-2">
-      <div>
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Catalog Management</h2>
-        <p class="text-xs md:text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
+        <!-- back button + title -->
+        <div class="flex items-center gap-3">
+          <button (click)="requestClose()" class="flex items-center gap-1 px-2 py-1 bg-slate-100 rounded hover:bg-slate-200 text-sm">
+            <i class="fa-solid fa-arrow-left w-4 h-4" aria-hidden="true"></i>
+            <span class="hidden md:inline">Back</span>
+          </button>
+          <div>
+            <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Catalog Management</h2>
+            <p class="text-xs md:text-sm text-slate-500 mt-1">Manage your product catalog and pricing</p>
+          </div>
+        </div>
+        <button (click)="openAddForm()" class="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium text-sm md:text-base w-full md:w-auto justify-center md:justify-start">
+          <i class="fa-solid fa-plus w-4 md:w-5 h-4 md:h-5" aria-hidden="true"></i>
+          Add Item
+        </button>
       </div>
-      <button (click)="openAddForm()" class="flex items-center gap-2 px-3 md:px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium text-sm md:text-base w-full md:w-auto justify-center md:justify-start">
-        <i class="fa-solid fa-plus w-4 md:w-5 h-4 md:h-5" aria-hidden="true"></i>
-        Add Item
-      </button>
-    </div>
   </div>
 
   <!-- Modal -->

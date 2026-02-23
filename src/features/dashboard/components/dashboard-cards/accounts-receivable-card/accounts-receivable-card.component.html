@@ -5,12 +5,16 @@
       <p class="text-sm text-slate-500">Outstanding payments by customer</p>
     </div>
     <div class="flex items-center gap-2">
+      <button (click)="newInvoice.emit()" title="New Invoice" class="p-2 text-indigo-600 hover:text-indigo-800 rounded hover:bg-indigo-50">
+        <i class="fa-solid fa-plus"></i>
+      </button>
       <button (click)="toggleExpand()" aria-label="Expand card" class="card-expand-btn">
         <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
       </button>
       <div class="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
         <i class="fa-solid fa-coins w-6 h-6" aria-hidden="true"></i>
       </div>
+      
     </div>
   </div>
   <div class="overflow-y-auto p-0 grow">
