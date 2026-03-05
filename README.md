@@ -2,6 +2,8 @@
 
 An automated invoice processing system designed specifically for disposable flatware sellers. This Angular application leverages AI-powered OCR using Google Gemini Flash for intelligent data extraction, combined with comprehensive inventory tracking and accounts receivable management.
 
+> **Note**: This is a Vibe Code project with GCP backend and deployment infrastructure.
+
 ## ✨ Features
 
 ### 🤖 AI-Powered Processing
@@ -31,10 +33,10 @@ An automated invoice processing system designed specifically for disposable flat
 
 - **Frontend**: Angular 21 (Standalone Components)
 - **Styling**: TailwindCSS 4.x
-- **Backend**: Firebase (Firestore, Auth, Storage)
+- **Backend**: Firebase (Firestore, Auth, Storage) + GCP Identity
 - **AI/ML**: Google Gemini Flash API
 - **Build Tool**: Vite
-- **Deployment**: Docker + Nginx
+- **Deployment**: Docker + Nginx on GCP
 - **Language**: TypeScript
 
 ## 📋 Prerequisites
