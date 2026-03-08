@@ -83,6 +83,8 @@ export class InvoiceService {
   async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
     const apiKey = this.getApiKey();
     if (!apiKey) {   
+      console.log("Looking for key name:", this.constants.API_KEY_ENV_VAR);
+      console.log("Is it in process.env?", !!process.env[this.constants.API_KEY_ENV_VAR]);
       throw new Error(this.constants.ERROR_API_KEY_MISSING);
     }
 
