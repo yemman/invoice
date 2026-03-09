@@ -80,125 +80,112 @@ export class InvoiceService {
     );
   }
 
-  async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
-    // In production we delegate to a cloud‑function proxy which handles the Gemini call
-    // (avoids exposing the API key from the client). The proxy will accept a JSON payload
-    // with the base64 string and forward it to Gemini, returning the same response shape
-    // we would get from `ai.models.generateContent`.
+ async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
+  try {
+    // 1. Get raw data from the appropriate source
+    const rawExtraction = environment.production 
+      ? await this.callProxy(base64Image) 
+      : await this.callGeminiDirectly(base64Image);
 
-    if (environment.production) {
-      try {
-        const proxyUrl = 'https://proxy-request-492842723997.europe-west1.run.app';
-        const res = await fetch(proxyUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ base64Image: base64Image })
-        });
+    // 2. Normalize and parse the result
+    const items = this.extractAndMapItems(rawExtraction);
 
-        if (!res.ok) {
-          throw new Error(`Proxy request failed (${res.status})`);
-        }
+    // 3. Assemble the final Invoice object
+    return {
+      customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
+      invoice_date: new Date().toISOString().split('T')[0],
+      invoice_number: this.constants.PENDING_INVOICE_NUMBER,
+      items
+    };
 
-        const proxyResponse: any = await res.json();
-        let text = proxyResponse.text;
-        if (!text && proxyResponse.data) {
-          // support older versions returning "data" field
-          text = proxyResponse.data;
-        }
-        if (!text) {
-          console.error('analyzeInvoiceImage: proxy returned no text', proxyResponse);
-          throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
-        }
-
-        let rawData: any;
-        try {
-          rawData = JSON.parse(text);
-        } catch (parseErr) {
-          console.error('analyzeInvoiceImage: failed to parse proxy text', text, parseErr);
-          throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
-        }
-        const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
-
-        return {
-          customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
-          invoice_date: new Date().toISOString().split('T')[0],
-          invoice_number: this.constants.PENDING_INVOICE_NUMBER,
-          items: items
-        };
-      } catch (err) {
-        this.errorHandler.handleError('analyzeInvoiceImage', err, 'Proxy/Gemini Extraction Error');
-        throw err;
-      }
-    }
-
-    // otherwise fall back to doing the call directly (dev mode)
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      // log diagnostic info when the API key is missing so we can debug
-      // issues in development or CI environments.
-      console.log("Looking for key name:", this.constants.API_KEY_ENV_VAR);
-      console.log("Is it in process.env?", !!process.env[this.constants.API_KEY_ENV_VAR]);
-      throw new Error(this.constants.ERROR_API_KEY_MISSING); // TO DO: Send message to user about missing API key
-    }
-
-    const ai = new GoogleGenAI({ apiKey });
-
-    try {
-      const response = await ai.models.generateContent({
-        model: this.constants.GEMINI_MODEL,
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                mimeType: 'image/jpeg',
-                data: base64Image
-              }
-            },
-            {
-              text: this.constants.GEMINI_PROMPT
-            }
-          ]
-        },
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: this.constants.GEMINI_ITEM_SCHEMA,
-          temperature: this.constants.GEMINI_TEMPERATURE
-        }
-      });
-
-      let text = response.text;
-      if (!text && (response as any).output) {
-        // some library versions return "output" instead of text
-        text = (response as any).output;
-      }
-      if (!text) {
-        console.error('analyzeInvoiceImage: Gemini returned empty text', response);
-        throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
-      }
-      
-      let rawData: any;
-      try {
-        rawData = JSON.parse(text);
-      } catch (parseErr) {
-        console.error('analyzeInvoiceImage: failed to parse Gemini text', text, parseErr);
-        throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
-      }
-      const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
-
-      return {
-        customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
-        invoice_date: new Date().toISOString().split('T')[0],
-        invoice_number: this.constants.PENDING_INVOICE_NUMBER,
-        items: items
-      };
-
-    } catch (error) {
-      this.errorHandler.handleError('analyzeInvoiceImage', error, 'Gemini Extraction Error');
-      throw error;
-    }
+  } catch (err) {
+    this.errorHandler.handleError('analyzeInvoiceImage', err, 'Invoice Extraction Error');
+    throw err;
   }
+}
+
+/** * Transport: Production Proxy 
+ */
+private async callProxy(base64Image: string): Promise<any> {
+  const proxyUrl = environment.proxyUrl; // Keep URLs in environment files!
+  const res = await fetch(proxyUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base64Image })
+  });
+
+  if (!res.ok) throw new Error(`Proxy request failed (${res.status})`);
+  return res.json();
+}
+
+/** * Transport: Dev Mode SDK 
+ */
+private async callGeminiDirectly(base64Image: string): Promise<any> {
+  const apiKey = this.getApiKey();
+  if (!apiKey) throw new Error(this.constants.ERROR_API_KEY_MISSING);
+
+  const ai = new GoogleGenAI({ apiKey });
+  const result = await ai.models.generateContent({
+    model: this.constants.GEMINI_MODEL,
+    contents: {
+      parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: base64Image } },
+        { text: this.constants.GEMINI_PROMPT }
+      ]
+    },
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: this.constants.GEMINI_ITEM_SCHEMA,
+      temperature: this.constants.GEMINI_TEMPERATURE
+    }
+  });
+
+  return result;
+}
+
+/**
+ * Transformation: Normalizes the proxy/SDK response into InvoiceItems
+ */
+private extractAndMapItems(response: any): InvoiceItem[] {
+  // 1. If the proxy already returned a parsed array (from res.json)
+  if (Array.isArray(response)) {
+    return this.mapToInvoiceItems(response);
+  }
+
+  // 2. Fallback: If it's a string (common in local dev or older proxy versions)
+  let rawData: any;
+  try {
+    const text = response.text || response.data || response;
+    rawData = typeof text === 'string' ? JSON.parse(text) : text;
+  } catch (e) {
+    console.error('Failed to parse extraction response', response);
+    throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+  }
+
+  // Ensure what we parsed is actually the array we expect
+  if (!Array.isArray(rawData)) {
+    // If Gemini returned a wrapper object like { items: [...] }
+    if (rawData.items && Array.isArray(rawData.items)) {
+      return this.mapToInvoiceItems(rawData.items);
+    }
+    throw new Error('Response format unrecognized: expected an array.');
+  }
+
+  return this.mapToInvoiceItems(rawData);
+}
+
+/**
+ * Mapping: Pure logic to convert raw extraction to your app's InvoiceItem model
+ */
+private mapToInvoiceItems(extractedData: ExtractionResult[]): InvoiceItem[] {
+  return extractedData.map(item => ({
+    index: item.index,
+    quantity: item.quantity,
+    // Add logic here if you need to look up product names/prices by index
+    description: `Item #${item.index}`, 
+    price: 0 
+  }));
+}
 
   async addInvoice(invoiceData: Partial<Invoice>) {
     try {
