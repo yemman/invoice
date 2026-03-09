@@ -94,7 +94,7 @@ export class InvoiceService {
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ image: base64Image })
+          body: JSON.stringify({ base64Image: base64Image })
         });
 
         if (!res.ok) {
