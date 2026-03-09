@@ -102,12 +102,23 @@ export class InvoiceService {
         }
 
         const proxyResponse: any = await res.json();
-        const text = proxyResponse.text;
+        let text = proxyResponse.text;
+        if (!text && proxyResponse.data) {
+          // support older versions returning "data" field
+          text = proxyResponse.data;
+        }
         if (!text) {
+          console.error('analyzeInvoiceImage: proxy returned no text', proxyResponse);
           throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
         }
 
-        const rawData = JSON.parse(text);
+        let rawData: any;
+        try {
+          rawData = JSON.parse(text);
+        } catch (parseErr) {
+          console.error('analyzeInvoiceImage: failed to parse proxy text', text, parseErr);
+          throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+        }
         const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
 
         return {
@@ -157,10 +168,23 @@ export class InvoiceService {
         }
       });
 
-      const text = response.text;
-      if (!text) throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+      let text = response.text;
+      if (!text && (response as any).output) {
+        // some library versions return "output" instead of text
+        text = (response as any).output;
+      }
+      if (!text) {
+        console.error('analyzeInvoiceImage: Gemini returned empty text', response);
+        throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+      }
       
-      const rawData = JSON.parse(text);
+      let rawData: any;
+      try {
+        rawData = JSON.parse(text);
+      } catch (parseErr) {
+        console.error('analyzeInvoiceImage: failed to parse Gemini text', text, parseErr);
+        throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+      }
       const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
 
       return {
