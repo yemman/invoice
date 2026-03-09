@@ -81,11 +81,55 @@ export class InvoiceService {
   }
 
   async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
+    // In production we delegate to a cloud‑function proxy which handles the Gemini call
+    // (avoids exposing the API key from the client). The proxy will accept a JSON payload
+    // with the base64 string and forward it to Gemini, returning the same response shape
+    // we would get from `ai.models.generateContent`.
+
+    if (environment.production) {
+      try {
+        const proxyUrl = 'https://proxy-request-492842723997.europe-west1.run.app';
+        const res = await fetch(proxyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ image: base64Image })
+        });
+
+        if (!res.ok) {
+          throw new Error(`Proxy request failed (${res.status})`);
+        }
+
+        const proxyResponse: any = await res.json();
+        const text = proxyResponse.text;
+        if (!text) {
+          throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+        }
+
+        const rawData = JSON.parse(text);
+        const items: InvoiceItem[] = this.mapToInvoiceItems(rawData);
+
+        return {
+          customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
+          invoice_date: new Date().toISOString().split('T')[0],
+          invoice_number: this.constants.PENDING_INVOICE_NUMBER,
+          items: items
+        };
+      } catch (err) {
+        this.errorHandler.handleError('analyzeInvoiceImage', err, 'Proxy/Gemini Extraction Error');
+        throw err;
+      }
+    }
+
+    // otherwise fall back to doing the call directly (dev mode)
     const apiKey = this.getApiKey();
-    if (!apiKey) {   
+    if (!apiKey) {
+      // log diagnostic info when the API key is missing so we can debug
+      // issues in development or CI environments.
       console.log("Looking for key name:", this.constants.API_KEY_ENV_VAR);
       console.log("Is it in process.env?", !!process.env[this.constants.API_KEY_ENV_VAR]);
-      throw new Error(this.constants.ERROR_API_KEY_MISSING);
+      throw new Error(this.constants.ERROR_API_KEY_MISSING); // TO DO: Send message to user about missing API key
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -147,6 +191,8 @@ export class InvoiceService {
     if(!environment.production){
       return environment.apiKey;
     }
+    console.log("Looking for key name:", this.constants.API_KEY_ENV_VAR);
+    console.log("Is it in process.env?", !!process.env[this.constants.API_KEY_ENV_VAR]);
     return typeof process !== 'undefined' ? process.env[this.constants.API_KEY_ENV_VAR] || '' : '';
   }
 
