@@ -19,3 +19,8 @@ export interface Invoice {
   status: 'verified' | 'draft';
   createdAt?: any; 
 }
+
+export interface ExtractionResult {
+  index: number;
+  quantity: number;
+}
