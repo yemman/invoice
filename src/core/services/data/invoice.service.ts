@@ -174,19 +174,6 @@ private extractAndMapItems(response: any): InvoiceItem[] {
   return this.mapToInvoiceItems(rawData);
 }
 
-/**
- * Mapping: Pure logic to convert raw extraction to your app's InvoiceItem model
- */
-private mapToInvoiceItems(extractedData: ExtractionResult[]): InvoiceItem[] {
-  return extractedData.map(item => ({
-    index: item.index,
-    quantity: item.quantity,
-    // Add logic here if you need to look up product names/prices by index
-    description: `Item #${item.index}`, 
-    price: 0 
-  }));
-}
-
   async addInvoice(invoiceData: Partial<Invoice>) {
     try {
       await this.firebaseService.addInvoice(invoiceData);
@@ -223,20 +210,71 @@ private mapToInvoiceItems(extractedData: ExtractionResult[]): InvoiceItem[] {
     });
   }
 
-  private getFallbackData(): Invoice[] {
-    return [
-      {
-        id: '1',
-        customer_name: 'Bistro 42 (Demo)',
-        invoice_date: '2023-10-15',
-        invoice_number: 'INV-001',
-        items: [
-          { name: 'Eco Forks (Box)', quantity: 10, unit_price: 25.00, total_price: 250.00 },
-          { name: 'Napkins (Pack)', quantity: 50, unit_price: 5.00, total_price: 250.00 }
-        ],
-        totalAmount: 500.00,
-        status: 'verified'
-      }
-    ];
-  }
+private getFallbackData(): Invoice[] {
+  return [
+    {
+      id: '1',
+      customer_name: 'Bistro 42 (Demo)',
+      invoice_date: '2023-10-15',
+      invoice_number: 'INV-001',
+      items: [
+        { name: 'Eco Forks (Box)', quantity: 10, unit_price: 25.00, total_price: 250.00 },
+        { name: 'Napkins (Pack)', quantity: 50, unit_price: 5.00, total_price: 250.00 }
+      ],
+      totalAmount: 500.00,
+      status: 'verified'
+    },
+    {
+      id: '2',
+      customer_name: 'The Coffee Bean - Tel Aviv',
+      invoice_date: '2026-03-01',
+      invoice_number: 'INV-2026-08',
+      items: [
+        { name: 'Oat Milk (Case)', quantity: 12, unit_price: 18.50, total_price: 222.00 },
+        { name: 'Espresso Beans (5kg)', quantity: 2, unit_price: 110.00, total_price: 220.00 },
+        { name: 'Paper Straws (Box)', quantity: 10, unit_price: 12.00, total_price: 120.00 }
+      ],
+      totalAmount: 562.00,
+      status: 'pending'
+    },
+    {
+      id: '3',
+      customer_name: 'HaGvina HaTzehuba Deli',
+      invoice_date: '2026-03-05',
+      invoice_number: 'INV-8842',
+      items: [
+        { name: 'Artisan Sourdough', quantity: 20, unit_price: 14.00, total_price: 280.00 },
+        { name: 'Cheddar Block (2kg)', quantity: 5, unit_price: 45.00, total_price: 225.00 },
+        { name: 'Salted Butter (1kg)', quantity: 10, unit_price: 32.00, total_price: 320.00 }
+      ],
+      totalAmount: 825.00,
+      status: 'verified'
+    },
+    {
+      id: '4',
+      customer_name: 'Green Garden Catering',
+      invoice_date: '2026-03-08',
+      invoice_number: 'INV-9901',
+      items: [
+        { name: 'Organic Quinoa (Bag)', quantity: 4, unit_price: 65.00, total_price: 260.00 },
+        { name: 'Truffle Oil (500ml)', quantity: 1, unit_price: 85.00, total_price: 85.00 }
+      ],
+      totalAmount: 345.00,
+      status: 'pending'
+    },
+    {
+      id: '5',
+      customer_name: 'The Urban Bakery',
+      invoice_date: '2026-02-28',
+      invoice_number: 'INV-045',
+      items: [
+        { name: 'Pastry Flour (25kg)', quantity: 8, unit_price: 42.00, total_price: 336.00 },
+        { name: 'Dry Yeast (Pack)', quantity: 15, unit_price: 8.50, total_price: 127.50 },
+        { name: 'Vanilla Extract (1L)', quantity: 2, unit_price: 75.00, total_price: 150.00 }
+      ],
+      totalAmount: 613.50,
+      status: 'verified'
+    }
+  ];
+}
 }
