@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { GoogleGenAI, Type } from "@google/genai";
-import { Invoice, InvoiceItem } from '../../models/invoice.model';
+import { Invoice, InvoiceItem, ExtractionResult } from '../../models/invoice.model';
 import { CatalogService } from './catalog.service';
 import { MessageService } from '../common/message.service';
 import { environment } from '../../../../environments/environment';
