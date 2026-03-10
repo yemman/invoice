@@ -23,5 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Angular cache
+.angular/
+
 # Environment files
 environment.development.ts
