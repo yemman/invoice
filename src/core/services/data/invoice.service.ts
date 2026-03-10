@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { GoogleGenAI, Type } from "@google/genai";
-import { Invoice, InvoiceItem, ExtractionResult } from '../../models/invoice.model';
+import { Invoice, InvoiceItem } from '../../models/invoice.model';
 import { CatalogService } from './catalog.service';
 import { MessageService } from '../common/message.service';
 import { environment } from '../../../../environments/environment';
@@ -103,7 +103,49 @@ export class InvoiceService {
     throw err;
   }
 }
+ async analyzeInvoiceImage(base64Image: string): Promise<Partial<Invoice>> {
+  try {
+    // 1. Get raw data from the appropriate source
+    const rawExtraction = environment.production 
+      ? await this.callProxy(base64Image) 
+      : await this.callGeminiDirectly(base64Image);
 
+    // 2. Normalize and parse the result
+    const items = this.extractAndMapItems(rawExtraction);
+
+    // 3. Assemble the final Invoice object
+    return {
+      customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
+      invoice_date: new Date().toISOString().split('T')[0],
+      invoice_number: this.constants.PENDING_INVOICE_NUMBER,
+      items
+    };
+
+  } catch (err) {
+    this.errorHandler.handleError('analyzeInvoiceImage', err, 'Invoice Extraction Error');
+    throw err;
+  }
+}
+
+/** * Transport: Production Proxy 
+ */
+private async callProxy(base64Image: string): Promise<any> {
+  const proxyUrl = environment.proxyUrl; // Keep URLs in environment files!
+  const res = await fetch(proxyUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base64Image })
+  });
+
+  if (!res.ok) throw new Error(`Proxy request failed (${res.status})`);
+  return res.json();
+}
+
+/** * Transport: Dev Mode SDK 
+ */
+private async callGeminiDirectly(base64Image: string): Promise<any> {
+  const apiKey = this.getApiKey();
+  if (!apiKey) throw new Error(this.constants.ERROR_API_KEY_MISSING);
 /** * Transport: Production Proxy 
  */
 private async callProxy(base64Image: string): Promise<any> {
@@ -139,7 +181,55 @@ private async callGeminiDirectly(base64Image: string): Promise<any> {
       temperature: this.constants.GEMINI_TEMPERATURE
     }
   });
+  const ai = new GoogleGenAI({ apiKey });
+  const result = await ai.models.generateContent({
+    model: this.constants.GEMINI_MODEL,
+    contents: {
+      parts: [
+        { inlineData: { mimeType: 'image/jpeg', data: base64Image } },
+        { text: this.constants.GEMINI_PROMPT }
+      ]
+    },
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: this.constants.GEMINI_ITEM_SCHEMA,
+      temperature: this.constants.GEMINI_TEMPERATURE
+    }
+  });
 
+  return result;
+}
+
+/**
+ * Transformation: Normalizes the proxy/SDK response into InvoiceItems
+ */
+private extractAndMapItems(response: any): InvoiceItem[] {
+  // 1. If the proxy already returned a parsed array (from res.json)
+  if (Array.isArray(response)) {
+    return this.mapToInvoiceItems(response);
+  }
+
+  // 2. Fallback: If it's a string (common in local dev or older proxy versions)
+  let rawData: any;
+  try {
+    const text = response.text || response.data || response;
+    rawData = typeof text === 'string' ? JSON.parse(text) : text;
+  } catch (e) {
+    console.error('Failed to parse extraction response', response);
+    throw new Error(this.constants.ERROR_NO_DATA_EXTRACTED);
+  }
+
+  // Ensure what we parsed is actually the array we expect
+  if (!Array.isArray(rawData)) {
+    // If Gemini returned a wrapper object like { items: [...] }
+    if (rawData.items && Array.isArray(rawData.items)) {
+      return this.mapToInvoiceItems(rawData.items);
+    }
+    throw new Error('Response format unrecognized: expected an array.');
+  }
+
+  return this.mapToInvoiceItems(rawData);
+}
   return result;
 }
 
@@ -235,7 +325,7 @@ private getFallbackData(): Invoice[] {
         { name: 'Paper Straws (Box)', quantity: 10, unit_price: 12.00, total_price: 120.00 }
       ],
       totalAmount: 562.00,
-      status: 'pending'
+      status: 'draft'
     },
     {
       id: '3',
@@ -260,7 +350,7 @@ private getFallbackData(): Invoice[] {
         { name: 'Truffle Oil (500ml)', quantity: 1, unit_price: 85.00, total_price: 85.00 }
       ],
       totalAmount: 345.00,
-      status: 'pending'
+      status: 'draft'
     },
     {
       id: '5',
