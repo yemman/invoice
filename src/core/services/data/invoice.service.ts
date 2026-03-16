@@ -92,7 +92,7 @@ export class InvoiceService {
 
     // 3. Assemble the final Invoice object
     return {
-      customer_name: this.constants.DEFAULT_CUSTOMER_NAME,
+      customer_name: '',
       invoice_date: new Date().toISOString().split('T')[0],
       invoice_number: this.constants.PENDING_INVOICE_NUMBER,
       items

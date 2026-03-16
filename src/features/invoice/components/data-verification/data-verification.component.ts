@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Invoice, InvoiceItem } from '../../../../core/models/invoice.model';
 import { CalculationUtilityService } from '../../../../core/services/common/calculation-utility.service';
 import { CatalogService } from '../../../../core/services/data/catalog.service';
+import { InvoiceService } from '../../../../core/services/data/invoice.service';
 
 @Component({
     selector: 'app-data-verification',
@@ -19,12 +20,18 @@ export class DataVerificationComponent {
 
   protected calculation = inject(CalculationUtilityService);
   protected catalogService = inject(CatalogService);
+  protected invoiceService = inject(InvoiceService);
   editableData = signal<Partial<Invoice>>({});
+  customers = signal<string[]>([]);
 
   constructor() {
     effect(() => {
       const incoming = this.data();
       this.editableData.set(this.calculation.deepClone(incoming));
+    });
+    this.invoiceService.invoices.subscribe(invoices => {
+      const customerNames = invoices.map(invoice => invoice.customer_name);
+      this.customers.set([...new Set(customerNames)]);
     });
   }
 
