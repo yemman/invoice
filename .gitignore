@@ -28,3 +28,4 @@ dist-ssr
 
 # Environment files
 environment.development.ts
+environment.dev.ts
