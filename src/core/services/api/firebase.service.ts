@@ -80,7 +80,7 @@ export class FirebaseService extends BaseFirebaseService {
 
   private buildInvoiceData(invoiceData: Partial<Invoice>, totalAmount: number) {
     return {
-      customer_name: invoiceData.customer_name || this.constants.DEFAULT_CUSTOMER_NAME,
+      customer_name: invoiceData.customer_name ,
       invoice_date: invoiceData.invoice_date || new Date().toISOString().split('T')[0],
       invoice_number: invoiceData.invoice_number || this.constants.DEFAULT_INVOICE_NUMBER,
       items: invoiceData.items || [],

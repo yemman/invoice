@@ -17,9 +17,7 @@
         <p class="text-slate-500 mt-1 text-sm md:text-base">Drag & drop or click to select</p>
         <p class="text-xs text-slate-400 mt-1">Supports JPG, PNG</p>
       </div>
-      <button (click)="manualEntry.emit()" class="mt-4 text-indigo-600 text-sm hover:underline">
-        <i class="fa-solid fa-pencil w-4 h-4 mr-1"></i>Enter manually
-      </button>
+     
     } @else {
       <div class="relative w-full h-full flex items-center justify-center bg-slate-900/5 rounded-lg overflow-hidden">
          <img [src]="previewUrl()" class="max-h-[200px] md:max-h-[280px] object-contain shadow-sm" alt="Invoice Preview">
@@ -29,7 +27,9 @@
       </div>
     }
   </div>
-
+  <button (click)="newInvoice.emit()" class="mt-4 text-indigo-600 text-sm hover:underline">
+    <i class="fa-solid fa-pencil w-4 h-4 mr-1"></i>Enter manually
+  </button>
   @if (previewUrl()) {
       <button (click)="processImage()" 
             [disabled]="isProcessing()"
