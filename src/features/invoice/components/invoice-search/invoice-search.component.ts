@@ -4,6 +4,7 @@ import { Invoice } from '../../../../core/models/invoice.model';
 import { InvoiceFilterService } from '../../../../core/services/data/invoice-filter.service';
 import { InvoiceFiltersComponent } from '../invoice-filters/invoice-filters.component';
 import { InvoiceDetailComponent } from '../invoice-detail/invoice-detail.component';
+import { exportToCsv } from '../../../../shared/utils/export.utils';
 
 /**
  * Smart (Container) Component
@@ -124,6 +125,21 @@ export class InvoiceSearchComponent implements OnInit {
    */
   selectInvoice(invoice: Invoice): void {
     this.selectedInvoice.set(invoice);
+  }
+
+  exportToCsv(): void {
+    const data = this.filteredInvoices();
+    const rows = [
+      ['Invoice #', 'Customer', 'Date', 'Total Amount', 'Status'],
+      ...data.map(invoice => [
+        invoice.invoice_number,
+        invoice.customer_name,
+        invoice.invoice_date,
+        invoice.totalAmount,
+        invoice.status === 'verified' ? 'Verified' : 'Draft'
+      ])
+    ];
+    exportToCsv('Filtered_Invoices', rows);
   }
 
   /**
