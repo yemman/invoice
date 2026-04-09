@@ -32,7 +32,7 @@ jobs:
       run: npm ci
 
     - name: Run tests with Firebase Emulator
-      run: npx firebase-tools emulators:exec --project demo-crm-test --import=./tests/emulator-data "npm test -- --watch=false --browsers=ChromeHeadless"
+      run: npx firebase-tools emulators:exec --project demo-crm-test --import=./tests/emulator-data "npm test"
 
     - name: Build project
       run: npm run build
