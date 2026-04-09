@@ -18,7 +18,9 @@
             },
             "index": "index.html",
             "browser": "index.tsx",
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css"
+            ],
             "tsConfig": "tsconfig.json"
           },
           "configurations": {
@@ -71,10 +73,11 @@
             },
             "index": "index.html",
             "browser": "index.tsx",
-            "styles": ["src/styles.css"],
+            "styles": [
+              "src/styles.css"
+            ],
             "tsConfig": "tsconfig.json",
             "assets": [
-              "src/favicon.ico",
               "src/favicon.svg",
               "src/assets"
             ]

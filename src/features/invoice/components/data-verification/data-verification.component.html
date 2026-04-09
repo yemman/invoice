@@ -1,4 +1,4 @@
-<app-validation-summary [showSummary]="showValidationSummary()"></app-validation-summary>
+<app-validation-summary [errors]="showValidationSummary() ? formErrors() : []"></app-validation-summary>
 
 <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden flex flex-col h-full">
   <div class="bg-indigo-600 p-4 flex justify-between items-center text-white shrink-0">
@@ -25,7 +25,7 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-medium text-slate-500 uppercase">Invoice Date</label>
-          <input type="date" [formControl]="dateControl()" (change)="editableData().createdAt = dateControl().value" name="invoiceDate"
+          <input type="date" [formControl]="dateControl()" (change)="editableData().invoice_date = dateControl().value" name="invoiceDate"
                  class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                  [class.border-red-500]="dateControl().touched && dateControl().invalid">
           <app-validation-message [control]="dateControl()"></app-validation-message>
@@ -111,7 +111,7 @@
       <button type="button" (click)="onCancel.emit()" class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-200 font-medium transition-colors">
         Discard
       </button>
-      <button type="button" (click)="handleConfirm()" [disabled]="!isFormValid()" [class.opacity-50]="!isFormValid()" class="px-6 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition-all flex items-center gap-2">
+      <button type="button" (click)="handleConfirm()" class="px-6 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition-all flex items-center gap-2">
         <i class="fa-solid fa-check w-5 h-5" aria-hidden="true"></i>
         Confirm & Save
       </button>

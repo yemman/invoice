@@ -1,5 +1,5 @@
 
-import { Component, input, output, signal, effect, ChangeDetectionStrategy, inject, computed, EventEmitter, Output } from '@angular/core';
+import { Component, input, output, signal, effect, ChangeDetectionStrategy, inject, computed, EventEmitter, Output, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { Invoice, InvoiceItem } from '../../../../core/models/invoice.model';
@@ -37,23 +37,46 @@ export class DataVerificationComponent {
   // Validation summary state
   showValidationSummary = signal(false);
 
+  formErrors = computed(() => {
+    const errors: string[] = [];
+    if (!this.editableData().customer_name?.trim()) {
+       errors.push('Customer Name is required.');
+    }
+    if (this.dateControl().invalid) {
+       errors.push('Invoice Date is required.');
+    }
+    if (this.amountControl().invalid) {
+       errors.push('Invoice Total Amount must be greater than 0.');
+    }
+    if (!this.editableData().items?.length) {
+       errors.push('At least one item must be added to the invoice.');
+    }
+    return errors;
+  });
+
   isFormValid = computed(() => {
-    return this.amountControl().valid && this.dateControl().valid && !!this.editableData().id;
+    return this.formErrors().length === 0;
   });
 
   constructor() {
     effect(() => {
       const incoming = this.data();
-      this.editableData.set(this.calculation.deepClone(incoming));
-      // Update form controls when data changes
-      this.amountControl().setValue(this.editableData()?.totalAmount || 0);
-      this.dateControl().setValue(this.editableData()?.createdAt || '');
-
+      const cloned = this.calculation.deepClone(incoming);
+      
+      untracked(() => {
+        this.editableData.set(cloned);
+        // Update form controls when data changes
+        this.amountControl().setValue(cloned.totalAmount || 0);
+        this.dateControl().setValue(cloned.invoice_date || '');
+      });
     });
+
     effect(() => {
       const invoices = this.invoiceService.invoices();
       const customerNames = invoices.map(invoice => invoice.customer_name);
-      this.customers.set([...new Set(customerNames)]);
+      untracked(() => {
+        this.customers.set([...new Set(customerNames)]);
+      });
     });
   }
 
@@ -76,9 +99,9 @@ export class DataVerificationComponent {
     // After recalculating item, we need to update the total amount and the form control
     this.editableData.update(d => ({
         ...d,
-        total_amount: this.calculateTotal()
+        totalAmount: this.calculateTotal()
     }));
-    this.amountControl().setValue(this.editableData().totalAmount);
+    this.amountControl().setValue(this.editableData().totalAmount || 0);
   }
 
   calculateTotal(): number {
@@ -117,8 +140,8 @@ export class DataVerificationComponent {
     // After removing item, update total amount and form control
     this.editableData.update(d => ({
         ...d,
-        total_amount: this.calculateTotal()
+        totalAmount: this.calculateTotal()
     }));
-    this.amountControl().setValue(this.editableData().totalAmount);
+    this.amountControl().setValue(this.editableData().totalAmount || 0);
   }
 }
