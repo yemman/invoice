@@ -1,5 +1,5 @@
 
-import { Component, Input, Signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-validation-summary',
@@ -13,5 +13,5 @@ import { Component, Input, Signal } from '@angular/core';
   `,
 })
 export class ValidationSummaryComponent {
-  @Input({ required: true }) showSummary!: Signal<boolean>;
+  showSummary = input.required<boolean>();
 }

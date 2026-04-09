@@ -1,4 +1,7 @@
 import {
+  __rest
+} from "./chunk-B2KI3AIV.js";
+import {
   Component,
   ErrorFactory,
   FirebaseError,
@@ -30,9 +33,6 @@ import {
   registerVersion,
   updateEmulatorBanner
 } from "./chunk-LWLCIWKF.js";
-import {
-  __rest
-} from "./chunk-B2KI3AIV.js";
 import "./chunk-GOMI4DH3.js";
 
 // node_modules/@firebase/auth/dist/esm2017/index-35c79a8a.js
