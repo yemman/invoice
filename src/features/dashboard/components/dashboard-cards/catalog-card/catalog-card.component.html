@@ -5,6 +5,9 @@
       <p class="text-sm text-slate-500">{{ catalogService.totalItems() }} products available</p>
     </div>
     <div class="flex items-center gap-2">
+      <button (click)="exportToCsv()" title="Export to CSV" class="p-2 text-blue-600 hover:text-blue-800 rounded hover:bg-blue-50">
+        <i class="fa-solid fa-file-export"></i>
+      </button>
       <button (click)="toggleExpand()" aria-label="Expand card" class="card-expand-btn">
         <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
       </button>

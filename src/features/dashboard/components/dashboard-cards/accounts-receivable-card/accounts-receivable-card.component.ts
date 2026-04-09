@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from '../../../../../core/services/data/invoice.service';
 import { ExpandableCardService } from '../../../../../shared/services/expandable-card.service';
+import { exportToCsv } from '../../../../../shared/utils/export.utils';
 
 @Component({
   selector: 'app-accounts-receivable-card',
@@ -28,5 +29,17 @@ export class AccountsReceivableCardComponent {
 
   openInvoices(customer: string) {
     this.selectCustomer.emit(customer);
+  }
+
+  exportToCsv() {
+    const data = this.invoiceService.accountsReceivable();
+    const rows = [
+      ['Customer', 'Total Owed'],
+      ...data.map(client => [
+        client.customer,
+        client.amount
+      ])
+    ];
+    exportToCsv('Accounts_Receivable', rows);
   }
 }
