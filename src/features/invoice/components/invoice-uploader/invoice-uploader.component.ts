@@ -11,7 +11,6 @@ import { MessageService } from '../../../../core/services/common/message.service
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InvoiceUploaderComponent {
-  @Output() newInvoice = new EventEmitter<void>();
   imageSelected = output<string>(); // Emits base64 string
   manualEntry = output<void>(); // trigger manual invoice creation
 

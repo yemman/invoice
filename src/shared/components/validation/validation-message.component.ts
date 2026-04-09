@@ -1,5 +1,5 @@
 
-import { Component, Input, Signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 @Component({
@@ -14,5 +14,5 @@ import { FormControl } from '@angular/forms';
   `,
 })
 export class ValidationMessageComponent {
-  @Input({ required: true }) control!: Signal<FormControl>;
+  control = input.required<FormControl>();
 }

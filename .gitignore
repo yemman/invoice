@@ -1,3 +1,19 @@
+# Angular 20+ specific cache
+.angular/cache/
+
+# Firebase & GCP tool caches
+.firebase/
+.gcloud/
+hosting/.cache/
+
+# General Node/Development caches
+node_modules/
+dist/
+.npm/
+.eslintcache/
+*.log
+firebase-debug.log*
+
 # Logs
 logs
 *.log
