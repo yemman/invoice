@@ -78,6 +78,11 @@ export class FirebaseService extends BaseFirebaseService {
     await this.deleteDocument(this.db, this.constants.INVOICES_COLLECTION, id);
   }
 
+  async clearAllInvoices(): Promise<void> {
+    if (!this.db) throw new Error(this.constants.ERROR_DATABASE_NOT_CONNECTED);
+    await this.clearCollection(this.db, this.constants.INVOICES_COLLECTION);
+  }
+
   private buildInvoiceData(invoiceData: Partial<Invoice>, totalAmount: number) {
     return {
       customer_name: invoiceData.customer_name ,

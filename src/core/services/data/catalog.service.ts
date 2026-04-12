@@ -63,6 +63,10 @@ export class CatalogService extends BaseFirebaseService {
     await this.deleteDocument(this.db, this.constants.CATALOG_COLLECTION, id);
   }
 
+  async clearAllCatalogItems(): Promise<void> {
+    await this.clearCollection(this.db, this.constants.CATALOG_COLLECTION);
+  }
+
   getCatalogItemById(id: string): CatalogItem | undefined {
     return this.catalogSignal().find(item => item.id === id);
   }

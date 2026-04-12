@@ -61,6 +61,15 @@ export class InvoiceService {
     }
   }
 
+  async clearAllInvoices() {
+    try {
+      await this.firebaseService.clearAllInvoices();
+    } catch (error) {
+      this.errorHandler.handleError('clearAllInvoices', error);
+      throw error;
+    }
+  }
+
   async deleteInvoice(id: string) {
     try {
       await this.firebaseService.deleteInvoice(id);

@@ -34,6 +34,17 @@
         </button>
       </nav>
 
+      <!-- System Settings in Sidebar -->
+      <div class="px-4 pb-2 space-y-1">
+        <button (click)="navigateToSettings()"
+                [class.bg-indigo-600]="view() === 'settings'"
+                [class.text-white]="view() === 'settings'"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
+          <i class="fa-solid fa-cog w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
+          System Settings
+        </button>
+      </div>
+
       <!-- Mini Stats & Tools in Sidebar -->
       <div class="p-4 border-t border-slate-800">
         <div class="bg-slate-800/50 rounded-lg p-3">
@@ -57,6 +68,8 @@
             Seller Dashboard
           } @else if (view() === 'upload') {
             Upload Invoice
+          } @else if (view() === 'settings') {
+            System Settings
           } @else {
             Review Data
           }
@@ -115,6 +128,10 @@
               />
             }
           }
+
+          @if (view() === 'settings') {
+            <app-system-settings class="h-full block rounded-lg shadow-sm" />
+          }
         </div>
       </div>
     </main>
@@ -150,6 +167,16 @@
             Process Invoice
           </button>
         </nav>
+
+        <div class="px-4 pb-2 space-y-1">
+          <button (click)="navigateToSettings(); closeSidebar()"
+                  [class.bg-indigo-600]="view() === 'settings'"
+                  [class.text-white]="view() === 'settings'"
+                  class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors text-left group">
+            <i class="fa-solid fa-cog w-5 h-5 group-hover:text-indigo-400 transition-colors" aria-hidden="true"></i>
+            System Settings
+          </button>
+        </div>
 
         <div class="p-4 border-t border-slate-800">
           <div class="bg-slate-800/50 rounded-lg p-3">
