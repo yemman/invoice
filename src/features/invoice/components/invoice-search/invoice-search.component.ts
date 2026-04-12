@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, inject, OnInit, signal, compute
 import { CommonModule } from '@angular/common';
 import { Invoice } from '../../../../core/models/invoice.model';
 import { InvoiceFilterService } from '../../../../core/services/data/invoice-filter.service';
+import { ErrorHandlerService } from '../../../../core/services/common/error-handler.service';
 import { InvoiceFiltersComponent } from '../invoice-filters/invoice-filters.component';
 import { InvoiceDetailComponent } from '../invoice-detail/invoice-detail.component';
 import { exportToCsv } from '../../../../shared/utils/export.utils';
@@ -25,6 +26,7 @@ export class InvoiceSearchComponent implements OnInit {
   @Output() create = new EventEmitter<void>();
 
   private filterService = inject(InvoiceFilterService);
+  private errorHandler = inject(ErrorHandlerService);
 
   // UI State
   protected isFiltersExpanded = signal(false);
@@ -172,7 +174,7 @@ export class InvoiceSearchComponent implements OnInit {
     try {
       localStorage.setItem('invoice-filters', JSON.stringify(this.filters()));
     } catch (e) {
-      console.warn('Failed to persist filters:', e);
+      this.errorHandler.handleError('persistFilters', e, 'Failed to persist filters');
     }
   }
 
@@ -187,7 +189,7 @@ export class InvoiceSearchComponent implements OnInit {
         this.filterService.applyFilters(filters);
       }
     } catch (e) {
-      console.warn('Failed to restore filters:', e);
+      this.errorHandler.handleError('restoreFilters', e, 'Failed to restore filters');
     }
   }
 

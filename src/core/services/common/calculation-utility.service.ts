@@ -55,7 +55,7 @@ export class CalculationUtilityService {
   }
 
   /**
-   * Generate UUID-like ID
+   * Generate secure UUID
    */
   generateId(): string {
     return typeof self !== 'undefined' ? self.crypto.randomUUID() : crypto.randomUUID();
