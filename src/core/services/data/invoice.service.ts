@@ -195,8 +195,11 @@ private extractAndMapItems(response: any): InvoiceItem[] {
   }
 
   private mapToInvoiceItems(rawData: any[]): InvoiceItem[] {
+    const catalogItems = this.catalogService.catalog();
+    const catalogMap = new Map(catalogItems.map(item => [item.index, item]));
+
     return rawData.map((item: any) => {
-      const catalog = this.catalogService.getCatalogItemByIndex(item.index);
+      const catalog = catalogMap.get(item.index);
       const unitPrice = catalog ? catalog.unit_price : 0;
       const name = catalog ? catalog.name : `${this.constants.DEFAULT_CATALOG_ITEM_NAME_TEMPLATE}${item.index}`;
       return {
