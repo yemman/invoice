@@ -10,11 +10,12 @@ import { InvoiceUploaderComponent } from '../features/invoice/components/invoice
 import { DataVerificationComponent } from '../features/invoice/components/data-verification/data-verification.component';
 import { DashboardComponent } from '../features/dashboard/components/dashboard/dashboard.component';
 import { LoginComponent } from '../features/auth/components/login/login.component';
+import { SystemSettingsComponent } from '../features/dashboard/components/system-settings/system-settings.component';
 
 @Component({
     selector: 'app-root',
     standalone: true,
-    imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent, MessageToastComponent, ConfirmModalComponent, LoginComponent],
+    imports: [CommonModule, InvoiceUploaderComponent, DataVerificationComponent, DashboardComponent, MessageToastComponent, ConfirmModalComponent, LoginComponent, SystemSettingsComponent],
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +27,7 @@ export class AppComponent {
   protected authService = inject(AuthService);
 
   // Simple state machine for the view
-  view = signal<'dashboard' | 'upload' | 'verify'>('dashboard');
+  view = signal<'dashboard' | 'upload' | 'verify' | 'settings'>('dashboard');
   
   // Mobile sidebar state
   sidebarOpen = signal(false);
@@ -84,6 +85,10 @@ export class AppComponent {
 
   navigateToDashboard() {
     this.view.set('dashboard');
+  }
+
+  navigateToSettings() {
+    this.view.set('settings');
   }
 
   // invoked when dashboard requests an edit

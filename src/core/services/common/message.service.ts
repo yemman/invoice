@@ -10,9 +10,18 @@ export interface Message {
   timeout?: number; // ms
 }
 
+export type ConfirmModalType = 'standard' | 'danger';
+
 export interface ConfirmRequestView {
   id: string;
   message: string;
+  type: ConfirmModalType;
+  challengeText?: string;
+}
+
+export interface ConfirmConfig {
+  type?: ConfirmModalType;
+  challengeText?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -44,11 +53,14 @@ export class MessageService {
   }
 
   // Simple confirm wrapper for now; can be replaced with a modal implementation later
-  async confirm(message: string): Promise<boolean> {
+  async confirm(message: string, config?: ConfirmConfig): Promise<boolean> {
     const id = this.calculation.generateId();
+    const type = config?.type || 'standard';
+    const challengeText = config?.challengeText;
+
     return new Promise<boolean>((resolve) => {
       this.confirmResolvers.set(id, resolve);
-      this.confirmSignal.update(arr => [...arr, { id, message }]);
+      this.confirmSignal.update(arr => [...arr, { id, message, type, challengeText }]);
     });
   }
 

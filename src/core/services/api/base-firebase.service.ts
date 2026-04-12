@@ -8,6 +8,8 @@ import {
   doc,
   onSnapshot,
   query,
+  getDocs,
+  writeBatch,
   DocumentReference,
   DocumentData
 } from 'firebase/firestore';
@@ -103,6 +105,40 @@ export class BaseFirebaseService {
       await deleteDoc(doc(db, collectionName, documentId));
     } catch (error) {
       this.errorHandler.handleError(`deleteDocument[${collectionName}]`, error);
+      throw error;
+    }
+  }
+
+  protected async clearCollection(db: Firestore, collectionName: string, ...queryConstraints: any[]): Promise<void> {
+    if (!db) {
+      throw new Error('Database is not connected');
+    }
+
+    try {
+      const q = query(collection(db, collectionName), ...queryConstraints);
+      const snapshot = await getDocs(q);
+
+      // Batch delete up to 500 documents at a time
+      const batchSize = 500;
+      let batch = writeBatch(db);
+      let count = 0;
+
+      for (const docSnapshot of snapshot.docs) {
+        batch.delete(docSnapshot.ref);
+        count++;
+
+        if (count === batchSize) {
+          await batch.commit();
+          batch = writeBatch(db);
+          count = 0;
+        }
+      }
+
+      if (count > 0) {
+        await batch.commit();
+      }
+    } catch (error) {
+      this.errorHandler.handleError(`clearCollection[${collectionName}]`, error);
       throw error;
     }
   }
