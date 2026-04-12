@@ -1,23 +1,62 @@
-@if (!showCatalogManagement()) {
-  <div class="w-full h-full flex flex-col gap-3 md:gap-6">
-    <!-- View Tabs (search disabled) -->
-    <div class="flex gap-2 border-b border-slate-200">
-      <button
-        type="button"
-        class="px-4 py-3 transition-colors text-emerald-600 font-semibold"
-        aria-selected="true"
-      >
-        <i class="fa-solid fa-chart-column mr-2"></i>Dashboard Overview
-      </button>
-    </div>
+<div class="w-full h-full flex flex-col gap-3 md:gap-6 bg-slate-50/50">
+  <!-- View Tabs -->
+  <div class="flex gap-2 border-b border-slate-200">
+    <button
+      type="button"
+      (click)="setActiveTab('overview')"
+      class="px-4 py-3 transition-colors font-semibold"
+      [class.text-emerald-600]="activeTab() === 'overview'"
+      [class.border-b-2]="activeTab() === 'overview'"
+      [class.border-emerald-600]="activeTab() === 'overview'"
+      [class.text-slate-500]="activeTab() !== 'overview'"
+      [class.hover:text-slate-700]="activeTab() !== 'overview'"
+      [attr.aria-selected]="activeTab() === 'overview'"
+    >
+      <i class="fa-solid fa-chart-column mr-2"></i>Dashboard Overview
+    </button>
+    <button
+      type="button"
+      (click)="setActiveTab('catalog')"
+      class="px-4 py-3 transition-colors font-semibold"
+      [class.text-emerald-600]="activeTab() === 'catalog'"
+      [class.border-b-2]="activeTab() === 'catalog'"
+      [class.border-emerald-600]="activeTab() === 'catalog'"
+      [class.text-slate-500]="activeTab() !== 'catalog'"
+      [class.hover:text-slate-700]="activeTab() !== 'catalog'"
+      [attr.aria-selected]="activeTab() === 'catalog'"
+    >
+      <i class="fa-solid fa-tags mr-2"></i>Catalog Management
+    </button>
+    <button
+      type="button"
+      (click)="setActiveTab('history')"
+      class="px-4 py-3 transition-colors font-semibold"
+      [class.text-emerald-600]="activeTab() === 'history'"
+      [class.border-b-2]="activeTab() === 'history'"
+      [class.border-emerald-600]="activeTab() === 'history'"
+      [class.text-slate-500]="activeTab() !== 'history'"
+      [class.hover:text-slate-700]="activeTab() !== 'history'"
+      [attr.aria-selected]="activeTab() === 'history'"
+    >
+      <i class="fa-solid fa-clock-rotate-left mr-2"></i>Invoice History
+    </button>
+  </div>
 
+  <!-- Content Area -->
+  <div class="flex-1 overflow-auto">
     <!-- Overview View -->
-      <div class="flex-1 overflow-auto space-y-3 md:space-y-6">
+    @if (activeTab() === 'overview') {
+      <div class="space-y-3 md:space-y-6">
         <!-- Cards Grid - Responsive -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           <app-inventory-sold-card></app-inventory-sold-card>
-          <app-accounts-receivable-card (selectCustomer)="selectCustomer($event)" (newInvoice)="manualInvoice.emit()"></app-accounts-receivable-card>
-          <app-catalog-card (manage)="toggleCatalogManagement()"></app-catalog-card>
+          <app-accounts-receivable-card
+            (selectCustomer)="selectCustomer($event)"
+            (newInvoice)="manualInvoice.emit()">
+          </app-accounts-receivable-card>
+          <app-catalog-card
+            (manage)="setActiveTab('catalog')">
+          </app-catalog-card>
         </div>
         
         <app-customer-invoices
@@ -28,13 +67,27 @@
           (remove)="onDeleteInvoice($event)"
         ></app-customer-invoices>
       </div>
+    }
 
+    <!-- Catalog Management View -->
+    @if (activeTab() === 'catalog') {
+      <div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg">
+        <app-catalog-management
+          (close)="setActiveTab('overview')">
+        </app-catalog-management>
+      </div>
+    }
+
+    <!-- Invoice History View -->
+    @if (activeTab() === 'history') {
+      <div class="w-full h-full flex flex-col">
+        <app-invoice-search
+          [invoices]="invoiceService.invoices()"
+          (create)="manualInvoice.emit()"
+          (edit)="onEditInvoice($event)"
+          (remove)="onDeleteInvoice($event)"
+        ></app-invoice-search>
+      </div>
+    }
   </div>
-} @else {
-  <div class="w-full h-full flex flex-col bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg">    
-    <!-- Catalog Management Component -->
-    <div class="flex-1 overflow-hidden">
-      <app-catalog-management (close)="toggleCatalogManagement()"></app-catalog-management>
-    </div>
-  </div>
-}
+</div>
