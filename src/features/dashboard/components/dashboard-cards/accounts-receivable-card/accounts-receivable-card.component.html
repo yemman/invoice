@@ -30,7 +30,7 @@
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
-        @for (client of invoiceService.accountsReceivable(); track client.customer) {
+        @for (client of displayedItems(); track client.customer) {
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="px-5 py-3 font-medium text-slate-700">{{ client.customer }}</td>
             <td class="px-5 py-3 text-right font-mono text-emerald-700 font-bold">{{ client.amount | currency:'ILS' }}</td>
