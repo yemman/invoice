@@ -28,6 +28,7 @@ export class AccountsReceivableCardComponent {
     this.expandableCard.toggleExpand();
   }
 
+  // TODO (Jules): [Angular 21 Efficiency] Convert `get expanded()` to a `computed` signal or expose the signal directly.
   get expanded() {
     return this.expandableCard.expanded();
   }

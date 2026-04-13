@@ -35,6 +35,7 @@ export class AppComponent {
   // Temporary holding for data being processed
   currentExtractedData = signal<Partial<Invoice> | null>(null);
 
+  // TODO (Jules): [Angular 21 Efficiency] Convert `get stats()` to a `computed` signal. Calling a getter that depends on signals inside the template (or other reactive contexts) can cause unnecessary re-evaluations.
   get stats() {
     return {
       totalRevenue: this.invoiceService.totalRevenue(),
@@ -50,6 +51,7 @@ export class AppComponent {
       this.currentExtractedData.set(extracted);
       this.view.set('verify');
     } catch (err) {
+      // TODO (Jules): [Security & Validation] Ensure sensitive error details (like stack traces or internal IDs) are not logged to the console in production environments. Pass through `ErrorHandlerService` instead.
       console.error(err);
       this.messageService.error('Failed to analyze invoice. Please try again or check your API key.');
     }

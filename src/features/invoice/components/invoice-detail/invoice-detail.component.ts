@@ -10,6 +10,7 @@ import { Invoice } from '../../../../core/models/invoice.model';
   styleUrls: ['./invoice-detail.component.css']
 })
 export class InvoiceDetailComponent {
+  // TODO (Jules): [Angular 21 Efficiency] Convert @Input() decorator to a signal input (e.g. `invoice = input<Invoice | null>(null);`) for better zoneless reactivity.
   @Input() invoice: Invoice | null = null;
   @Output() edit = new EventEmitter<Invoice>();
 

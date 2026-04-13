@@ -66,6 +66,7 @@ export class CatalogManagementComponent {
     this.error.set('');
   }
 
+  // TODO (Jules): [Security & Validation] Sanitize user inputs (e.g., `data.name`) before saving to Firestore to prevent XSS if displayed outside Angular context.
   async saveItem() {
     const data = this.formData();
     
@@ -99,6 +100,7 @@ export class CatalogManagementComponent {
       this.closeForm();
     } catch (err) {
       this.error.set('Failed to save item. Try again.');
+      // TODO (Jules): [Security & Validation] Ensure sensitive error details are not logged directly. Use `ErrorHandlerService` to format and sanitize error logs.
       console.error(err);
     } finally {
       this.loading.set(false);
@@ -116,6 +118,7 @@ export class CatalogManagementComponent {
     } catch (err) {
       this.error.set('Failed to delete item.');
       this.messageService.error('Failed to delete item.');
+      // TODO (Jules): [Security & Validation] Ensure sensitive error details are not logged directly. Use `ErrorHandlerService` to format and sanitize error logs.
       console.error(err);
     } finally {
       this.loading.set(false);

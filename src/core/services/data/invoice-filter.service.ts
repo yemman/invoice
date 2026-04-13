@@ -86,6 +86,7 @@ export class InvoiceFilterService {
   /**
    * Filter invoices based on current filter state
    */
+  // TODO (Jules): [Scalability] Heavy client-side filtering. If the `invoices` array scales past ~10,000 items, this will bottleneck the browser. Consider delegating search and filtering to a backend search service (like Algolia, Typesense, or an optimized Cloud Run endpoint) for large datasets.
   readonly filteredInvoices = (invoices: Invoice[]) =>
     computed(() => {
       const f = this.filterSignal();

@@ -16,6 +16,7 @@ import { InvoiceFilter } from '../../../../core/services/data/invoice-filter.ser
   styleUrls: ['./invoice-filters.component.css'],
 })
 export class InvoiceFiltersComponent {
+  // TODO (Jules): [Angular 21 Efficiency] Convert @Input() decorators to signal inputs (e.g. `filters = input.required<InvoiceFilter>()`) for better zoneless reactivity.
   @Input() filters!: InvoiceFilter;
   @Input() activeFilterCount: number = 0;
   @Input() isExpanded: boolean = false;

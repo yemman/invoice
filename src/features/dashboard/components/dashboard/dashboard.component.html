@@ -59,6 +59,7 @@
           </app-catalog-card>
         </div>
         
+        <!-- TODO (Jules): [Angular 21 Efficiency] Wrap app-customer-invoices with @defer (e.g., @defer (when selectedCustomer())) to lazy load the component only when a customer is actually selected. -->
         <app-customer-invoices
           [customerName]="selectedCustomer()"
           [invoices]="customerInvoices()"

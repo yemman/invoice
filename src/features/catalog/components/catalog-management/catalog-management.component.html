@@ -178,6 +178,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
+            <!-- TODO (Jules): [Angular 21 Efficiency] Consider moving this table row rendering into a @defer block with a viewport trigger if the list grows very large, or rely on virtual scrolling. -->
             @for (item of filteredCatalogItems(); track item.id) {
               <tr class="hover:bg-slate-50 transition-colors">
                 <td class="px-5 py-3 font-mono font-semibold text-slate-700 text-sm">{{ item.id }}</td>

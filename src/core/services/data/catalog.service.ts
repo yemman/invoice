@@ -24,6 +24,7 @@ export class CatalogService extends BaseFirebaseService {
     this.subscribeToCatalog();
   }
 
+  // TODO (Jules): [Firestore Performance] Add error handling for offline/disconnected states, or use Firestore offline persistence options.
   private subscribeToCatalog() {
     this.subscribeToCollection<CatalogItem>(
       this.db,
