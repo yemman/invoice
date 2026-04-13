@@ -69,4 +69,8 @@ export class InvoiceUploaderComponent {
     this.previewUrl.set(null);
     this.rawBase64 = null;
   }
+
+  resetProcessing() {
+    this.isProcessing.set(false);
+  }
 }

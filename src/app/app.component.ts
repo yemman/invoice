@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, ViewEncapsulation, effect } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, ViewEncapsulation, effect, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from '../core/services/data/invoice.service';
 import { MessageToastComponent } from '../shared/components/message-toast.component';
@@ -35,6 +35,8 @@ export class AppComponent {
   // Temporary holding for data being processed
   currentExtractedData = signal<Partial<Invoice> | null>(null);
 
+  @ViewChild(InvoiceUploaderComponent) uploaderComponent!: InvoiceUploaderComponent;
+
   // TODO (Jules): [Angular 21 Efficiency] Convert `get stats()` to a `computed` signal. Calling a getter that depends on signals inside the template (or other reactive contexts) can cause unnecessary re-evaluations.
   get stats() {
     return {
@@ -54,6 +56,10 @@ export class AppComponent {
       // TODO (Jules): [Security & Validation] Ensure sensitive error details (like stack traces or internal IDs) are not logged to the console in production environments. Pass through `ErrorHandlerService` instead.
       console.error(err);
       this.messageService.error('Failed to analyze invoice. Please try again or check your API key.');
+    } finally {
+      if (this.uploaderComponent) {
+        this.uploaderComponent.resetProcessing();
+      }
     }
   }
 
