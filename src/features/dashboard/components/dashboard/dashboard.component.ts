@@ -1,5 +1,6 @@
-import { Component, inject, signal, computed, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, computed, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { InvoiceService } from '../../../../core/services/data/invoice.service';
 import { MessageService } from '../../../../core/services/common/message.service';
 import { CatalogService } from '../../../../core/services/data/catalog.service';
@@ -9,22 +10,34 @@ import { InventorySoldCardComponent } from '../dashboard-cards/inventory-sold-ca
 import { AccountsReceivableCardComponent } from '../dashboard-cards/accounts-receivable-card/accounts-receivable-card.component';
 import { CatalogCardComponent } from '../dashboard-cards/catalog-card/catalog-card.component';
 import { Invoice } from '../../../../core/models/invoice.model';
+import { InvoiceSearchComponent } from '../../../invoice/components/invoice-search/invoice-search.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CatalogManagementComponent, CustomerInvoicesComponent, InventorySoldCardComponent, AccountsReceivableCardComponent, CatalogCardComponent],
+  imports: [
+    CommonModule,
+    CatalogManagementComponent,
+    CustomerInvoicesComponent,
+    InventorySoldCardComponent,
+    AccountsReceivableCardComponent,
+    CatalogCardComponent,
+    InvoiceSearchComponent
+  ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   @Output() manualInvoice = new EventEmitter<void>();
   @Output() editInvoice = new EventEmitter<Invoice>();
 
   protected invoiceService = inject(InvoiceService);
   protected catalogService = inject(CatalogService);
   protected messageService = inject(MessageService);
-  protected showCatalogManagement = signal(false); 
+  protected route = inject(ActivatedRoute);
+  protected router = inject(Router);
+
+  protected activeTab = signal<'overview' | 'catalog' | 'history'>('overview');
   protected selectedCustomer = signal<string | null>(null);
   // TODO (Jules): [Scalability] Heavy client-side filtering. If `invoices()` array scales past ~10,000 items, this will bottleneck the browser. Consider delegating to a backend search service or paginated Firestore queries.
   protected customerInvoices = computed(() => {
@@ -33,6 +46,16 @@ export class DashboardComponent {
     return this.invoiceService.invoices().filter(inv => inv.customer_name === name);
   });
 
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      if (tab === 'overview' || tab === 'catalog' || tab === 'history') {
+        this.activeTab.set(tab);
+      } else if (!tab) {
+        this.activeTab.set('overview');
+      }
+    });
+  }
 
   selectCustomer(name: string) {
     this.selectedCustomer.set(name);
@@ -42,8 +65,13 @@ export class DashboardComponent {
     this.selectedCustomer.set(null);
   }
 
-  toggleCatalogManagement() {
-    this.showCatalogManagement.set(!this.showCatalogManagement());
+  setActiveTab(tab: 'overview' | 'catalog' | 'history') {
+    this.activeTab.set(tab);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tab === 'overview' ? null : tab },
+      queryParamsHandling: 'merge'
+    });
   }
 
   onEditInvoice(inv: Invoice) {
