@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InvoiceService } from '../../../../../core/services/data/invoice.service';
 import { ExpandableCardService } from '../../../../../shared/services/expandable-card.service';
@@ -16,6 +16,11 @@ export class InventorySoldCardComponent {
   protected expandableCard = inject(ExpandableCardService);
 
   constructor(public invoiceService: InvoiceService) {}
+
+  readonly displayedItems = computed(() => {
+    const allItems = this.invoiceService.inventoryNeeds();
+    return this.expandableCard.expanded() ? allItems : allItems.slice(0, 10);
+  });
 
   toggleExpand() {
     this.expandableCard.toggleExpand();
