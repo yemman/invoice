@@ -79,6 +79,7 @@ export class InvoiceService {
     }
   }
 
+  // TODO (Jules): [Firestore Performance] Add limit() or pagination to avoid loading all invoices at once, which could cause memory/performance issues as the dataset grows.
   private subscribeToInvoices() {
     this.firebaseService.subscribeToInvoices(
       (invoices) => this.invoicesSignal.set(invoices),
@@ -198,12 +199,14 @@ private extractAndMapItems(response: any): InvoiceItem[] {
     if(!environment.production){
       return environment.apiKey;
     }
+    // TODO (Jules): [Security & Validation] Remove these console.logs as they can leak sensitive configuration details or API keys in production logs.
     console.log("Looking for key name:", this.constants.API_KEY_ENV_VAR);
     console.log("Is it in process.env?", !!process.env[this.constants.API_KEY_ENV_VAR]);
     return typeof process !== 'undefined' ? process.env[this.constants.API_KEY_ENV_VAR] || '' : '';
   }
 
   private mapToInvoiceItems(rawData: any[]): InvoiceItem[] {
+    // TODO (Jules): [Firestore Performance] Potential "N+1" issue: `getCatalogItemByIndex` does a lookup per item in memory, but if this scaled to fetching from DB, it would be an N+1 problem. Ensure a Map is used for O(1) lookups if querying memory, or batch fetch if hitting DB.
     return rawData.map((item: any) => {
       const catalog = this.catalogService.getCatalogItemByIndex(item.index);
       const unitPrice = catalog ? catalog.unit_price : 0;

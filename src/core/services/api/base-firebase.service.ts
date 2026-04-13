@@ -21,6 +21,8 @@ import { ErrorHandlerService } from '../common/error-handler.service';
 export class BaseFirebaseService {
   constructor(protected errorHandler: ErrorHandlerService) {}
 
+  // TODO (Jules): [Firestore Performance] Add support for passing explicit Firestore indexes or log a warning if an index is likely needed (e.g., when combining `orderBy` and multiple `where` clauses).
+  // TODO (Jules): [Firestore Performance] Ensure that components using `subscribeToCollection` unsubscribe when destroyed to avoid memory leaks and unnecessary reads.
   protected subscribeToCollection<T extends DocumentData>(
     db: Firestore,
     collectionName: string,
@@ -119,6 +121,7 @@ export class BaseFirebaseService {
       const snapshot = await getDocs(q);
 
       // Batch delete up to 500 documents at a time
+      // TODO (Jules): [Scalability] Hardcoded batch size. Consider moving `500` to an environment variable or AppConstantsService so it can be tuned based on deployment limits.
       const batchSize = 500;
       let batch = writeBatch(db);
       let count = 0;

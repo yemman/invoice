@@ -26,6 +26,7 @@ export class DashboardComponent {
   protected messageService = inject(MessageService);
   protected showCatalogManagement = signal(false); 
   protected selectedCustomer = signal<string | null>(null);
+  // TODO (Jules): [Scalability] Heavy client-side filtering. If `invoices()` array scales past ~10,000 items, this will bottleneck the browser. Consider delegating to a backend search service or paginated Firestore queries.
   protected customerInvoices = computed(() => {
     const name = this.selectedCustomer();
     if (!name) return [] as Invoice[];

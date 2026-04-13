@@ -105,12 +105,14 @@
       <div class="flex-1 overflow-hidden p-3 md:p-6 relative">
         <div class="max-w-6xl mx-auto h-full">
           @if (view() === 'dashboard') {
+            <!-- TODO (Jules): [Angular 21 Efficiency] Wrap main view components (app-dashboard, app-invoice-uploader, app-data-verification, app-system-settings) in @defer blocks to lazy load them, reducing initial bundle size. -->
             <app-dashboard class="h-full block" (manualInvoice)="startManualEntry()" (editInvoice)="handleDashboardEdit($event)" />
           } 
           
           @if (view() === 'upload') {
             <div class="h-full flex items-center justify-center">
               <div class="w-full max-w-2xl px-2">
+                <!-- TODO (Jules): [Angular 21 Efficiency] Consider wrapping app-invoice-uploader in a @defer block to lazy-load its chunk. -->
                 <app-invoice-uploader 
                   (imageSelected)="handleImageSelected($event)" 
                   (manualEntry)="startManualEntry()"
@@ -121,6 +123,7 @@
 
           @if (view() === 'verify') {
             @if (currentExtractedData(); as data) {
+              <!-- TODO (Jules): [Angular 21 Efficiency] Wrap app-data-verification with @defer to ensure the forms and validation logic load only when an invoice is being verified. -->
               <app-data-verification 
                 [data]="data"
                 (onConfirm)="handleVerificationConfirm($event)"
@@ -130,6 +133,7 @@
           }
 
           @if (view() === 'settings') {
+            <!-- TODO (Jules): [Angular 21 Efficiency] Wrap app-system-settings in @defer. Settings is a low-traffic area that should definitely be lazily loaded. -->
             <app-system-settings class="h-full block rounded-lg shadow-sm" />
           }
         </div>

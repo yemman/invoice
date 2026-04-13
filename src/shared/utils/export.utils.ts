@@ -1,3 +1,4 @@
+  // TODO (Jules): [Scalability] Heavy logic: As datasets grow, client-side CSV generation will block the main thread and crash the browser. Move this generation to a Cloud Run backend or Web Worker.
 export function exportToCsv(filename: string, rows: any[][]): void {
   const processRow = (row: any[]) => {
     return row.map(val => {

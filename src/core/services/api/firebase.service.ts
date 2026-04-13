@@ -36,6 +36,7 @@ export class FirebaseService extends BaseFirebaseService {
     return !!this.db;
   }
 
+  // TODO (Jules): [Firestore Performance] Add error handling for offline/disconnected states, or use Firestore offline persistence options.
   subscribeToInvoices(callback: (invoices: Invoice[]) => void, errorCallback: (error: any) => void) {
     if (!this.db) {
       errorCallback(new Error(this.constants.ERROR_DATABASE_NOT_INITIALIZED));

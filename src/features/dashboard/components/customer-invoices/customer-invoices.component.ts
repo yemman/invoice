@@ -11,6 +11,7 @@ import { InvoiceDetailComponent } from '../../../invoice/components/invoice-deta
   styleUrls: ['./customer-invoices.component.css']
 })
 export class CustomerInvoicesComponent {
+  // TODO (Jules): [Angular 21 Efficiency] Convert @Input() decorators to signal inputs (e.g. `customerName = input<string | null>(null);`) for better zoneless reactivity.
   @Input() customerName: string | null = null;
   @Input() invoices: Invoice[] = [];
   @Output() close = new EventEmitter<void>();

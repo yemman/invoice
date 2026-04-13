@@ -20,6 +20,7 @@ import { exportToCsv } from '../../../../shared/utils/export.utils';
   styleUrls: ['./invoice-search.component.css'],
 })
 export class InvoiceSearchComponent implements OnInit {
+  // TODO (Jules): [Angular 21 Efficiency] Convert @Input() decorator to a signal input (e.g. `invoices = input<Invoice[]>([])`) for better zoneless reactivity.
   @Input() invoices: Invoice[] = [];
   @Output() edit = new EventEmitter<Invoice>();
   @Output() remove = new EventEmitter<string>();
