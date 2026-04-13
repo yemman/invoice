@@ -1,54 +1,58 @@
+<div align="center">
+
 # FlatwareFlow Invoice Manager
 
-An automated invoice processing system designed specifically for disposable flatware sellers. This Angular application leverages AI-powered OCR using Google Gemini Flash for intelligent data extraction, combined with comprehensive inventory tracking and accounts receivable management.
+**An automated CRM and invoice processing system leveraging AI-powered OCR to streamline operations and inventory tracking for disposable flatware sellers.**
 
-> **Note**: This is a Vibe Code project with GCP backend and deployment infrastructure.
+[![CI Status](https://github.com/flatwareflow/flatwareflow-invoice-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/flatwareflow/flatwareflow-invoice-manager/actions)
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031.svg?style=flat&logo=angular&logoColor=white)](https://angular.io)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28.svg?style=flat&logo=firebase&logoColor=white)](https://firebase.google.com)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.x-38B2AC.svg?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ES2022-3178C6.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-Build-646CFF.svg?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
+
+</div>
+
+---
 
 ## ✨ Features
 
-### 🤖 AI-Powered Processing
-- **OCR Integration**: Google Gemini Flash for automatic text extraction from invoice images
-- **Smart Data Verification**: AI-assisted validation of extracted invoice data
-- **Intelligent Categorization**: Automatic classification of flatware items and quantities
+- **AI-Powered OCR**: Utilizes Google Gemini Flash for automatic, intelligent text extraction from invoice images and smart data verification.
+- **Real-time Lead & Inventory Tracking**: Instant synchronization and cache management of catalog data using Firestore real-time subscriptions.
+- **Advanced Dashboard Analytics**: Comprehensive overview of sales, inventory, and receivables with interactive, drill-down capabilities.
+- **Robust Search & Filtering**: Multi-criteria system supporting full-text search, custom date ranges, and advanced amount-based boundaries.
+- **Export Capabilities**: Seamlessly export full dataset reports to CSV for external tools ("Snapshot for the eyes, Full Data for the tools").
 
-### 📊 Advanced Analytics
-- **Real-time Dashboard**: Comprehensive overview of sales, inventory, and receivables
-- **Advanced Filtering**: Multi-criteria search and filtering system
-- **Financial Insights**: Revenue tracking, customer analytics, and inventory sold metrics
+## 🏗️ Architecture
 
-### 🔍 Search & Filtering
-- **Full-text Search**: Search across invoice numbers, customer names, and item descriptions
-- **Date Range Filtering**: Filter invoices by custom date ranges
-- **Status Management**: Track verified vs. draft invoices
-- **Amount-based Filtering**: Min/max amount boundaries
-- **Customer-specific Views**: Filter by individual customers
+The system is built on a highly optimized, modern frontend stack designed for performance and maintainability:
 
-### 🏗️ Modern Architecture
-- **SCAM Pattern**: 100% standalone components (Single Component Angular Modules)
-- **Firebase Integration**: Real-time database and authentication
-- **Responsive Design**: TailwindCSS for mobile-first UI
-- **Type-Safe**: Full TypeScript implementation
+- **Framework**: Angular 21 utilizing the Vite-based `@angular/build:application` builder.
+- **Reactivity & State**: Deep integration with Angular Signals, leveraging `provideZonelessChangeDetection()` for highly efficient, zoneless change detection.
+- **Component Pattern**: 100% Single Component Angular Modules (SCAM) providing self-contained, tree-shakeable components.
+- **Data Layer**: Direct integration with Firebase/Firestore. Local caching of data via `onSnapshot` combined with signals provides instant $O(1)$ client-side filtering without extra database reads.
+- **Styling**: Tailwind CSS 4.x for mobile-first, utility-driven responsive design.
 
-## 🛠️ Tech Stack
+## 🚀 DevOps
 
-- **Frontend**: Angular 21 (Standalone Components)
-- **Styling**: TailwindCSS 4.x
-- **Backend**: Firebase (Firestore, Auth, Storage) + GCP Identity
-- **AI/ML**: Google Gemini Flash API
-- **Build Tool**: Vite
-- **Deployment**: Docker + Nginx on GCP
-- **Language**: TypeScript
+The project utilizes GitHub Actions for continuous integration, enforcing strict quality and testing standards:
 
-## 📋 Prerequisites
+- **Node & Java Environment**: The pipeline targets Node 24 and Java 21 (Temurin) to support standard building alongside the Firebase Emulator suite.
+- **Strict Dependency Management**: Utilizing `npm ci` with explicit `actions/cache` steps and lockfile integrity checks (`npm run lock-check`).
+- **Hermetic Testing**: Unit and integration tests run via Vitest natively. Firestore tests execute hermetically against the Firebase Emulator in a "demo-mode" project (`demo-crm-test`), avoiding any mutations to real GCP environments.
+- **Build Verification**: Ensures the application successfully builds production artifacts via standard `npm run build` using the Vite builder.
 
-- Node.js 20+
-- npm or yarn
-- Google Cloud Project with Gemini API enabled
-- Firebase project configured
+## 💻 Setup
 
-## 🚀 Quick Start
+Follow these steps to set up the development environment locally. Note that the local Angular development server runs on port `3000`.
 
-### Local Development
+### Prerequisites
+
+- Node.js (v20+ recommended)
+- Firebase CLI installed globally
+- Java (JDK 21+) for running the Firebase Emulator
+
+### Installation Steps
 
 1. **Clone the repository**
    ```bash
@@ -61,96 +65,33 @@ An automated invoice processing system designed specifically for disposable flat
    npm install
    ```
 
-3. **Configure Firebase**
-   - The Firebase configuration is pre-configured in `src/core/config/firebase.config.ts`
-   - Ensure your Firebase project has Firestore and Authentication enabled
-
-4. **Set up Google Gemini API**
-   - Obtain a Gemini API key from Google AI Studio
-   - Create a `.env.local` file in the root directory:
+3. **Configure Environment**
+   - Create the necessary development environment file by copying the base configuration:
+     ```bash
+     cp environments/environment.ts environments/environment.development.ts
      ```
-     GEMINI_API_KEY=your_api_key_here
+   - Set up the Gemini API key. Create a `.env.local` file in the root directory:
+     ```env
+     GEMINI_API_KEY=your_gemini_api_key_here
      ```
 
-5. **Run the development server**
+4. **Start Development Server**
    ```bash
-   npm run dev
+   npm start
    ```
-   - Open [http://localhost:4200](http://localhost:4200) in your browser
+   *The application will be accessible at [http://localhost:3000](http://localhost:3000).*
 
-### 🐳 Docker Deployment
-
-1. **Build the Docker image**
+5. **Run Tests**
    ```bash
-   docker build -t flatwareflow-invoice-manager .
-   ```
-
-2. **Run the container**
-   ```bash
-   docker run -p 80:80 flatwareflow-invoice-manager
+   # Run unit tests via Vitest
+   npm run test
    ```
 
-3. **Access the application**
-   - Open [http://localhost](http://localhost) in your browser
+## 📬 Contact
 
-## 📁 Project Structure
+For business inquiries, support requests, or further information regarding this system, please reach out:
 
-```
-src/
-├── app/                          # Root application component
-├── core/                         # Core business logic
-│   ├── config/                   # Firebase configuration
-│   ├── models/                   # TypeScript interfaces
-│   ├── services/                 # Business logic services
-│   │   ├── api/                  # External API services
-│   │   ├── common/               # Shared utilities
-│   │   ├── constants/            # App constants
-│   │   └── data/                 # Data management services
-├── features/                     # Feature modules
-│   ├── auth/                     # Authentication
-│   ├── catalog/                  # Product catalog management
-│   ├── dashboard/                # Main dashboard
-│   └── invoice/                  # Invoice processing
-└── shared/                       # Shared components & utilities
-    ├── components/               # Reusable UI components
-    ├── services/                 # Shared services
-    └── utils/                    # Utility functions
-```
+**For inquiries, please contact [yannayhi@gmail.com](mailto:yannayhi@gmail.com)**
 
-## 🏃 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run watch` - Build in watch mode
-- `npm run test` - Run unit tests
-
-## 🔧 Configuration
-
-### Environment Variables
-Create a `.env.local` file for local development:
-```
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-### Firebase Setup
-The application uses Firebase for:
-- **Authentication**: User login/management
-- **Firestore**: Invoice and catalog data storage
-- **Storage**: File uploads (invoice images)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is public.
-
-## 🆘 Support
-
-For support or questions, please contact the development team.
-Under yannayhi@gmail.com
+---
+*Built with precision for seamless flatware management.*
