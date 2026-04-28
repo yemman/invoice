@@ -1,8 +1,9 @@
-import { Component, signal, computed, Output, EventEmitter } from '@angular/core';
+import { Component, signal, computed, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CatalogService } from '../../../../core/services/data/catalog.service';
 import { MessageService } from '../../../../core/services/common/message.service';
+import { ErrorHandlerService } from '../../../../core/services/common/error-handler.service';
 import { CatalogItem } from '../../../../core/models/catalog.model';
 
 @Component({
@@ -14,6 +15,11 @@ import { CatalogItem } from '../../../../core/models/catalog.model';
 })
 export class CatalogManagementComponent {
   @Output() close = new EventEmitter<void>();
+
+  private catalogService = inject(CatalogService);
+  private messageService = inject(MessageService);
+  private errorHandler = inject(ErrorHandlerService);
+
   protected catalogItems = this.catalogService.catalog;
   protected searchQuery = signal('');
   protected filteredCatalogItems = computed(() => {
@@ -38,8 +44,6 @@ export class CatalogManagementComponent {
     unit_price: 0,
     is_print: false
   });
-
-  constructor(private catalogService: CatalogService, private messageService: MessageService) {}
 
   requestClose() {
     this.close.emit();
@@ -100,8 +104,7 @@ export class CatalogManagementComponent {
       this.closeForm();
     } catch (err) {
       this.error.set('Failed to save item. Try again.');
-      // TODO (Jules): [Security & Validation] Ensure sensitive error details are not logged directly. Use `ErrorHandlerService` to format and sanitize error logs.
-      console.error(err);
+      this.errorHandler.handleError('CatalogManagementComponent', err);
     } finally {
       this.loading.set(false);
     }
@@ -118,8 +121,7 @@ export class CatalogManagementComponent {
     } catch (err) {
       this.error.set('Failed to delete item.');
       this.messageService.error('Failed to delete item.');
-      // TODO (Jules): [Security & Validation] Ensure sensitive error details are not logged directly. Use `ErrorHandlerService` to format and sanitize error logs.
-      console.error(err);
+      this.errorHandler.handleError('CatalogManagementComponent', err);
     } finally {
       this.loading.set(false);
     }
